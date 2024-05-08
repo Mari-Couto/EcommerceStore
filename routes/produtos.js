@@ -1,11 +1,27 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require('../mysql')
 
 router.get('/', (req, res) => {
-    res.status(200).send({
-        mensagem: 'Get funcionando na rota de produtos'
-    });
-});
+    try {
+      mysql.query('SELECT IdProduto, nome, descricao, precoProduto, quantidadeestoque FROM produtos', (err, results) => {
+        if (err) {
+          throw err;
+        }
+        const produtos = results.map(item => ({
+            id: item.IdProduto,
+            nome: item.nome,
+            descricao: item.descricao,
+            preco: item.precoProduto,
+            quantidadeEstoque: item.quantidadeestoque
+        }));
+        res.status(200).json(produtos);
+      });
+    } catch (error) {
+      console.error('Erro ao executar a consulta:', error);
+      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+  });
 
 router.post('/', (req, res) => {
   const produto = {
