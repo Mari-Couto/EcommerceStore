@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
+const Produtos = require('../models/produtosModel')
 
 router.get('/', (req, res) => {
     try {
@@ -8,13 +9,10 @@ router.get('/', (req, res) => {
         if (err) {
           throw err;
         }
-        const produtos = results.map(item => ({
-            id: item.IdProduto,
-            nome: item.nome,
-            descricao: item.descricao,
-            preco: item.precoProduto,
-            quantidadeEstoque: item.quantidadeestoque
-        }));
+        const produtos = results.map(item => {
+            return new Produtos(
+            item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque)
+        });
         res.status(200).json(produtos);
       });
     } catch (error) {
