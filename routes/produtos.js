@@ -8,9 +8,15 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    res.status(201).send({
-        mensagem: 'Post funcionando em rota de produtos'
-    });
+  const produto = {
+    nome: req.body.nome,
+    preco: req.body.preco,
+    descricao: req.body.descricao
+  };
+  res.status(201).send({
+    mensagem: "Insere um produto",
+    produtoCriado: produto
+  })
 });
 
 router.patch('/', (req, res) => {

@@ -1,12 +1,15 @@
  const express = require('express');
  const app = express();
  const morgan = require('morgan');
-
+ const cors = require('cors');
+ 
  const rotaProdutos = require('./routes/produtos')
  const rotaPedidos = require('./routes/pedidos')
  const rotaPedidosItens = require('./routes/pedidosItens')
  const rotaCategoria = require('./routes/categoria')
 
+ 
+app.use(cors());
 app.use(express.urlencoded({extended: false}));
 
  app.use(express.json());

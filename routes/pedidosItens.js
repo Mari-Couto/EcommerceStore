@@ -8,9 +8,14 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    res.status(201).send({
-        mensagem: 'Post funcionando em rota de itens do pedido'
-    });
+    const pedidosItens = {
+        quantidade: req.body.quantidade,
+        preco_unitario: req.body.preco_unitario,
+      };
+      res.status(201).send({
+        mensagem: "Insere um item do pedido",
+        produtoCriado: pedidosItens
+      })
 });
 
 router.patch('/', (req, res) => {
