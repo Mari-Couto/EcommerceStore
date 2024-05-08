@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
-const Produtos = require('../models/produtosModel')
+const Produtos = require('../models/produtosModel');
+const produtos = require('../models/produtosModel');
 
+//Exibi os produtos
 router.get('/', (req, res) => {
     try {
       mysql.query('SELECT IdProduto, nome, descricao, precoProduto, quantidadeestoque FROM produtos', (err, results) => {
@@ -20,6 +22,33 @@ router.get('/', (req, res) => {
       res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
   });
+
+  //Retorna dados de um produto
+  router.get('/:IdProduto', (req, res) => {
+    const IdProduto = req.params.IdProduto;
+    try{
+        mysql.query('SELECT * FROM produtos WHERE IdProduto = ?', [IdProduto], (err, results) => {
+        if(err){
+            throw err;
+        }    
+        if(results.length == 0){
+            return res.status(404).send({
+                mensagem: 'Não foi encontrado nenhum produto com esse ID'
+            })
+        }
+        const produtos = results.map(item => {
+            return new Produtos(
+            item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque)
+            })
+        res.status(200).json(produtos);
+        })
+    } catch (error) {
+        console.error('Erro ao executar a consulta:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+      }
+    })
+
+
 
 router.post('/', (req, res) => {
   const produto = {
@@ -45,11 +74,5 @@ router.delete('/', (req, res) =>{
     });
 });
 
-router.get('/:IdProduto', (req, res) => {
-    const IdProduto = req.params.IdProduto;
-    res.status(200).send({
-        mensagem: `Get id ${IdProduto} funcionando na rota de itens do pedido`
-    });
-});
 
 module.exports = router;
