@@ -25,4 +25,18 @@ router.delete('/', (req, res) =>{
     });
 });
 
+router.get('/:IdCategoria', (req, res) => {
+    res.status(200).send({
+        mensagem: 'Get id funcionando na rota de itens do categoria'
+    });
+});
+
+
+router.get('/:IdCategoria', (req, res) => {
+    const IdCategoria = req.params.IdCategoria;
+    res.status(200).send({
+        mensagem: `Get id ${IdCategoria} funcionando na rota de itens do pedido`
+    });
+});
+
 module.exports = router;

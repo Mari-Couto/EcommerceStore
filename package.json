@@ -3,12 +3,17 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon Server.js"
   },
   "author": "Marina",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

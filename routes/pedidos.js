@@ -25,4 +25,10 @@ router.delete('/', (req, res) =>{
     });
 });
 
+router.get('/:IdPedido', (req, res) => {
+    const IdPedido = req.params.IdPedido;
+    res.status(200).send({
+        mensagem: `Get id ${IdPedido} funcionando na rota de itens do pedido`
+    });
+});
 module.exports = router;
