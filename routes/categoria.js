@@ -5,25 +5,26 @@ const mysql = require('../mysql')
 //exibir categorias
 router.get('/', (req, res) => {
     try {
-        mysql.query('SELECT IdCategoria, nomeCategoria FROM categorias', (err, results) =>{
-            if(err){
+        mysql.query('SELECT IdCategoria, nomeCategoria FROM categorias', (err, results) => {
+            if (err) {
                 throw err;
             }
             if (results.length === 0) {
                 return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
             }
-            const categoria = {
-                IdCategoria: results[0].IdCategoria,
-                nomeCategoria: results[0].nomeCategoria
-            };
-
-            res.status(200).json(categoria);
+            
+            const categorias = results.map(categoria => ({
+                IdCategoria: categoria.IdCategoria,
+                nomeCategoria: categoria.nomeCategoria
+            }));
+            res.status(200).json(categorias);
         });
     } catch (error) {
         console.error('Erro ao executar a consulta:', error);
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
 
 //busca por id de categoria
 router.get('/:IdCategoria', (req, res) => {
@@ -69,10 +70,29 @@ router.post('/', (req, res) => {
     }
 });
 
-router.patch('/', (req, res) => {
-    res.status(202).send({
-        mensagem: 'Patch funcionando em rota de categoria'
-    });
+//alterando categoria
+router.patch('/:IdCategoria', (req, res) => {
+    const IdCategoria = req.params.IdCategoria;
+    const { nomeCategoria } = req.body;
+    if (!nomeCategoria) {
+        return res.status(400).json({ error: 'O nome da categoria é obrigatório' });
+    }
+    try {
+        mysql.query('UPDATE categorias SET nomeCategoria = ? WHERE IdCategoria = ?', [nomeCategoria, IdCategoria], (err, result) => {
+            if (err) {
+                console.error('Erro ao atualizar categoria:', err);
+                return res.status(500).json({ error: 'Erro ao atualizar categoria' });
+            }
+            if (result.affectedRows > 0) {
+                return res.status(200).json({ message: 'Categoria atualizada com sucesso' });
+            } else {
+                return res.status(404).json({ error: 'Categoria não encontrada' });
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
 router.delete('/', (req, res) =>{
