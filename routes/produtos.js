@@ -73,7 +73,7 @@ router.post('/', (req, res) => {
       let updateQuery = 'UPDATE produtos SET ';
       const updateValues = [];
       if(req.body.nome){
-        updateQuery += 'Nome = ?, ';
+        updateQuery += 'nome = ?, ';
         updateValues.push(req.body.nome);
       } 
       if(req.body.descricao){
@@ -109,13 +109,22 @@ router.post('/', (req, res) => {
       res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
   });
-  
 
-router.delete('/', (req, res) =>{
-    res.status(202).send({
-        mensagem: 'Delete funcionando em rota de produtos'
-    });
-});
-
+//Deletar produto
+  router.delete('/:IdProduto', (req, res) =>{
+    try {
+     mysql.query('DELETE FROM produtos WHERE IdProduto = ?', [req.params.IdProduto], (err, result) =>{
+       if(err){
+         console.error('Erro ao excluir produto', err);
+         res.status(500).json({error: 'Erro ao excluir produto'});
+       }else{
+        res.status(202).json({mensagem: "Produto excluído com sucesso"})
+       }
+     })
+    } catch (error) {
+     console.error('Erro ao processar a rota DELETE /:IdProduto', error);
+     res.status(500).json({error: 'Erro interno ao processar a requisição'});
+    }
+ });
 
 module.exports = router;
