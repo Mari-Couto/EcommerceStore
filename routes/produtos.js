@@ -46,21 +46,33 @@ router.get('/', (req, res) => {
         console.error('Erro ao executar a consulta:', error);
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
       }
-    })
+    });
 
-
-
-router.post('/', (req, res) => {
-  const produto = {
-    nome: req.body.nome,
-    preco: req.body.preco,
-    descricao: req.body.descricao
-  };
-  res.status(201).send({
-    mensagem: "Insere um produto",
-    produtoCriado: produto
-  })
-});
+    router.post('/', (req, res) => {
+      const produto = req.body; 
+      try {
+        mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque) VALUES (?,?,?,?)', 
+          [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque], 
+           (err, result) => {
+             if (err) {
+              res.status(500).json({ error: 'Erro ao inserir produto:', err });
+            } else {
+              const novoProduto = {
+                id: result.insertId,
+                nome: produto.nome,
+                precoProduto: produto.precoProduto,
+                descricao: produto.descricao,
+                quantidadeEstoque: produto.quantidadeEstoque
+              };
+              res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
+            }
+          });
+      } catch (error) {
+        console.error('Erro ao executar a consulta:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+      }
+    });
+  
 
 router.patch('/', (req, res) => {
     res.status(202).send({
