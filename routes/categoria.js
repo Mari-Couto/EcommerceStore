@@ -95,17 +95,28 @@ router.patch('/:IdCategoria', (req, res) => {
     }
 });
 
-router.delete('/', (req, res) =>{
-    res.status(202).send({
-        mensagem: 'Delete funcionando em rota de categoria'
-    });
+//Excluir categoria
+router.delete('/:IdCategoria', (req, res) => {
+    const IdCategoria = req.params.IdCategoria;
+    try {
+        mysql.query('DELETE FROM categorias WHERE IdCategoria = ?', [IdCategoria], (err, result) => {
+            if (err) {
+                console.error('Erro ao excluir categoria', err);
+                res.status(500).json({ error: 'Erro ao excluir categoria' });
+            } else {
+                if (result.affectedRows > 0) {
+                    res.status(200).json({ message: 'Categoria excluída com sucesso' });
+                } else {
+                    res.status(404).json({ error: 'Categoria não encontrada para excluir' });
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Erro ao processar a rota DELETE /categorias/:IdCategoria', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
-router.get('/:IdCategoria', (req, res) => {
-    res.status(200).send({
-        mensagem: 'Get id funcionando na rota de itens do categoria'
-    });
-});
 
 
 module.exports = router;
