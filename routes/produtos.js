@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
 const Produtos = require('../models/produtosModel');
-const produtos = require('../models/produtosModel');
 
 //Exibi os produtos
 router.get('/', (req, res) => {
@@ -48,31 +47,25 @@ router.get('/', (req, res) => {
       }
     });
 
-    router.post('/', (req, res) => {
-      const produto = req.body; 
-      try {
-        mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque) VALUES (?,?,?,?)', 
-          [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque], 
-           (err, result) => {
-             if (err) {
-              res.status(500).json({ error: 'Erro ao inserir produto:', err });
-            } else {
-              const novoProduto = {
-                id: result.insertId,
-                nome: produto.nome,
-                precoProduto: produto.precoProduto,
-                descricao: produto.descricao,
-                quantidadeEstoque: produto.quantidadeEstoque
-              };
-              res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
-            }
-          });
-      } catch (error) {
-        console.error('Erro ao executar a consulta:', error);
-        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-      }
-    });
-  
+//Insere os produtos
+router.post('/', (req, res) => {
+    const produto = req.body; 
+    try {
+      mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque) VALUES (?,?,?,?)', 
+        [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque], 
+         (err, result) => {
+           if (err) {
+            res.status(500).json({ error: 'Erro ao inserir produto:', err });
+          } else {
+            const novoProduto = new Produtos(result.insertId, produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque);
+            res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
+          }
+        });
+    } catch (error) {
+      console.error('Erro ao executar a consulta:', error);
+      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+  });
 
 router.patch('/', (req, res) => {
     res.status(202).send({
