@@ -67,11 +67,49 @@ router.post('/', (req, res) => {
     }
   });
 
-router.patch('/', (req, res) => {
-    res.status(202).send({
-        mensagem: 'Patch funcionando em rota de produtos'
-    });
-});
+  //Alterar produto
+  router.patch('/:IdProduto', (req, res) => {
+    try {
+      let updateQuery = 'UPDATE produtos SET ';
+      const updateValues = [];
+      if(req.body.nome){
+        updateQuery += 'Nome = ?, ';
+        updateValues.push(req.body.nome);
+      } 
+      if(req.body.descricao){
+        updateQuery += 'descricao = ?, ';
+        updateValues.push(req.body.descricao);
+      }
+      if(req.body.precoProduto){
+        updateQuery += 'precoProduto = ?, ';
+        updateValues.push(req.body.precoProduto);
+      }
+      if(req.body.quantidadeEstoque){
+        updateQuery += 'quantidadeEstoque = ?, ';
+        updateValues.push(req.body.quantidadeEstoque);
+      }
+  
+      updateQuery = updateQuery.slice(0, -2); 
+      updateQuery += ' WHERE IdProduto = ?';
+      updateValues.push(req.params.IdProduto);
+      
+      mysql.query(updateQuery, updateValues, (err, result) => {
+        if (err) {
+          res.status(500).json({ error: err});
+        } else {
+          if (result.affectedRows > 0) {
+            res.status(200).json({ message: 'Produto atualizado com sucesso' });
+          } else {
+            res.status(404).json({ error: 'Produto não encontrado' });
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao processar a rota PATCH /:IdProduto', error);
+      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+  });
+  
 
 router.delete('/', (req, res) =>{
     res.status(202).send({
