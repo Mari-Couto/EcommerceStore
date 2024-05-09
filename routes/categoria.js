@@ -49,10 +49,24 @@ router.get('/:IdCategoria', (req, res) => {
     }
 });
 
+//Envio da categoria 
 router.post('/', (req, res) => {
-    res.status(201).send({
-        mensagem: 'Post funcionando em rota de categoria'
-    });
+    const { nomeCategoria } = req.body;
+    if (!nomeCategoria) {
+        return res.status(400).json({ error: 'O nome da categoria é obrigatório' });
+    }
+    try {
+        mysql.query('INSERT INTO categorias (nomeCategoria) VALUES (?)', [nomeCategoria], (err, result) => {
+            if (err) {
+                console.error('Erro ao inserir categoria:', err);
+                return res.status(500).json({ error: 'Erro ao inserir categoria' });
+            }
+            res.status(201).json({ message: 'Categoria inserida com sucesso', IdCategoria: result.insertId });
+        });
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
 router.patch('/', (req, res) => {
@@ -73,12 +87,5 @@ router.get('/:IdCategoria', (req, res) => {
     });
 });
 
-
-router.get('/:IdCategoria', (req, res) => {
-    const IdCategoria = req.params.IdCategoria;
-    res.status(200).send({
-        mensagem: `Get id ${IdCategoria} funcionando na rota de itens do pedido`
-    });
-});
 
 module.exports = router;
