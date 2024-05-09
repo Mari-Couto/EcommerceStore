@@ -1,11 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require('../mysql')
 
+//exibir categorias
 router.get('/', (req, res) => {
-    res.status(200).send({
-        mensagem: 'Get funcionando na rota de categoria'
-    });
+    try {
+        mysql.query('SELECT IdCategoria, nomeCategoria FROM categorias', (err, results) =>{
+            if(err){
+                throw err;
+            }
+            if (results.length === 0) {
+                return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
+            }
+            const categoria = {
+                IdCategoria: results[0].IdCategoria,
+                nomeCategoria: results[0].nomeCategoria
+            };
+
+            res.status(200).json(categoria);
+        });
+    } catch (error) {
+        console.error('Erro ao executar a consulta:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
+
 
 router.post('/', (req, res) => {
     res.status(201).send({
