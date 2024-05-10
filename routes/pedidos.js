@@ -39,20 +39,40 @@ router.post('/', (req, res) => {
     }
 });
 
-
+//PRECISA DE PATCH NESSE???
 router.patch('/', (req, res) => {
     res.status(202).send({
         mensagem: 'Patch funcionando em rota de pedidos'
     });
 });
 
-router.delete('/', (req, res) =>{
-    res.status(202).send({
-        mensagem: 'Delete funcionando em rota de pedidos'
-    });
+// Delete do pedido
+router.delete('/:IdPedido', (req, res) => {
+    const IdPedido = req.params.IdPedido;
+
+    try {
+        mysql.query(
+            'DELETE FROM pedidos WHERE IdPedido = ?',
+            [IdPedido],
+            (err, result) => {
+                if (err) {
+                    console.error('Erro ao excluir o pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao excluir o pedido' });
+                }
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ error: 'Pedido não encontrado' });
+                }
+                res.status(202).json({ mensagem: 'Pedido excluído com sucesso' });
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
-//busca por id
+
+// Busca por id
 router.get('/:IdPedido', (req, res) => {
     const IdPedido = req.params.IdPedido;
     try {
