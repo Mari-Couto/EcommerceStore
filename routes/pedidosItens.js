@@ -71,11 +71,30 @@ router.patch('/:IdPedidoItem', (req, res) => {
     }
 });
 
+//deletar item de pedido
+router.delete('/:IdPedidoItem', (req, res) => {
+    const IdPedidoItem = req.params.IdPedidoItem;
 
-router.delete('/', (req, res) =>{
-    res.status(202).send({
-        mensagem: 'Delete funcionando em rota de itens do pedido'
-    });
+    try {
+        mysql.query(
+            'DELETE FROM pedidosItens WHERE IdPedidoItem = ?',
+            [IdPedidoItem],
+            (err, result) => {
+                if (err) {
+                    console.error('Erro ao excluir item de pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao excluir item de pedido' });
+                }
+                if (result.affectedRows > 0) {
+                    res.status(200).json({ message: 'Item de pedido excluído com sucesso' });
+                } else {
+                    res.status(404).json({ error: 'Item de pedido não encontrado' });
+                }
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
 //busca por id
