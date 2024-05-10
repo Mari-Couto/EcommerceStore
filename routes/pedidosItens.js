@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
 
+//exibir itens do pedido
 router.get('/', (req, res) => {
     try {
         mysql.query(
@@ -57,11 +58,29 @@ router.delete('/', (req, res) =>{
     });
 });
 
+//busca por id
 router.get('/:IdPedidoItem', (req, res) => {
     const IdPedidoItem = req.params.IdPedidoItem;
-    res.status(200).send({
-        mensagem: `Get id ${IdPedidoItem} funcionando na rota de itens do pedido`
-    });
+    try {
+        mysql.query(
+            'SELECT * FROM pedidosItens WHERE IdPedidoItem = ?',
+            [IdPedidoItem],
+            (err, results) => {
+                if (err) {
+                    console.error('Erro ao buscar item do pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao buscar item do pedido' });
+                }
+                if (results.length === 0) {
+                    return res.status(404).json({ error: 'Item do pedido não encontrado' });
+                }
+                res.status(200).json(results[0]);
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
+
 
 module.exports = router;
