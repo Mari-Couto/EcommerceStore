@@ -13,6 +13,24 @@ router.get('/', (req, res) => {
                     return res.status(500).json({ error: 'Erro ao buscar o pedido' });
                 }
                 res.status(200).json(results);
+            });
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+});
+
+// Inserir pedido
+router.post('/', (req, res) => {
+    try {
+        mysql.query(
+            'INSERT INTO pedidos (DataPedido, ValorTotal) VALUES (NOW(), (SELECT SUM(Quantidade * Preco_unitario) FROM pedidosItens))',
+            (err, result) => {
+                if (err) {
+                    console.error('Erro ao inserir pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao inserir pedido' });
+                }
+                res.status(201).json({ message: 'Pedido inserido com sucesso', IdPedido: result.insertId });
             }
         );
     } catch (error) {
@@ -21,11 +39,6 @@ router.get('/', (req, res) => {
     }
 });
 
-router.post('/', (req, res) => {
-    res.status(201).send({
-        mensagem: 'Post funcionando em rota de pedidos'
-    });
-});
 
 router.patch('/', (req, res) => {
     res.status(202).send({
