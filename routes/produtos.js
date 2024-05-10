@@ -3,24 +3,33 @@ const router = express.Router();
 const mysql = require('../mysql')
 const Produtos = require('../models/produtosModel');
 
-//Exibi os produtos
+  //Exibi os produtos
 router.get('/', (req, res) => {
-    try {
-      mysql.query('SELECT IdProduto, nome, descricao, precoProduto, quantidadeestoque FROM produtos', (err, results) => {
-        if (err) {
-          throw err;
-        }
-        const produtos = results.map(item => {
-            return new Produtos(
-            item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque)
-        });
-        res.status(200).json(produtos);
-      });
-    } catch (error) {
-      console.error('Erro ao executar a consulta:', error);
-      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-    }
-  });
+  try {
+    mysql.query(`SELECT 
+        produtos.IdProduto, 
+        produtos.nome, 
+        produtos.descricao, 
+        produtos.precoProduto, 
+        produtos.quantidadeestoque,
+        categorias.nomeCategoria AS categoria
+    FROM produtos
+    JOIN categorias ON produtos.IdCategoria = categorias.IdCategoria`, (err, results) => {
+      if (err) {
+        throw err;
+      }
+      const produtos = results.map(item => {
+        return new Produtos(
+        item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque, item.categoria)
+    });
+      res.status(200).json(produtos);
+    });
+  } catch (error) {
+    console.error('Erro ao executar a consulta:', error);
+    res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+  }
+});
+
 
   //Retorna dados de um produto
   router.get('/:IdProduto', (req, res) => {
@@ -37,7 +46,7 @@ router.get('/', (req, res) => {
         }
         const produtos = results.map(item => {
             return new Produtos(
-            item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque)
+            item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque, item.IdCategoria)
             })
         res.status(200).json(produtos);
         })
@@ -47,25 +56,30 @@ router.get('/', (req, res) => {
       }
     });
 
-//Insere os produtos
+// Insere os produtos
 router.post('/', (req, res) => {
-    const produto = req.body; 
-    try {
-      mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque) VALUES (?,?,?,?)', 
-        [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque], 
-         (err, result) => {
-           if (err) {
-            res.status(500).json({ error: 'Erro ao inserir produto:', err });
-          } else {
-            const novoProduto = new Produtos(result.insertId, produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque);
-            res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
-          }
-        });
-    } catch (error) {
-      console.error('Erro ao executar a consulta:', error);
-      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-    }
-  });
+  const produto = req.body; 
+  const { IdCategoria } = req.body; 
+  if (!IdCategoria) {
+      return res.status(400).json({ error: 'O IdCategoria é obrigatório' });
+  }
+  try {
+    mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria) VALUES (?,?,?,?,?)', 
+      [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria], 
+       (err, result) => {
+         if (err) {
+          res.status(500).json({ error: 'Erro ao inserir produto:', err });
+        } else {
+          const novoProduto = new Produtos(result.insertId, produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria);
+          res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
+        }
+      });
+  } catch (error) {
+    console.error('Erro ao executar a consulta:', error);
+    res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+  }
+});
+
 
   //Alterar produto
   router.patch('/:IdProduto', (req, res) => {
@@ -88,7 +102,10 @@ router.post('/', (req, res) => {
         updateQuery += 'quantidadeEstoque = ?, ';
         updateValues.push(req.body.quantidadeEstoque);
       }
-  
+      if(req.body.IdCategoria){
+        updateQuery += 'IdCategoria = ?, ';
+        updateValues.push(req.body.IdCategoria);
+      }
       updateQuery = updateQuery.slice(0, -2); 
       updateQuery += ' WHERE IdProduto = ?';
       updateValues.push(req.params.IdProduto);
