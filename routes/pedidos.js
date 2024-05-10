@@ -1,10 +1,24 @@
 const express = require('express');
 const router = express.Router();
+const mysql = require('../mysql')
 
+//exibir pedidos
 router.get('/', (req, res) => {
-    res.status(200).send({
-        mensagem: 'Get funcionando na rota de pedidos'
-    });
+    try {
+        mysql.query(
+            'SELECT * FROM pedidos',
+            (err, results) => {
+                if (err) {
+                    console.error('Erro ao buscar o pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao buscar o pedido' });
+                }
+                res.status(200).json(results);
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
 
 router.post('/', (req, res) => {
