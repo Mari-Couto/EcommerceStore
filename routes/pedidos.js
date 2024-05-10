@@ -52,10 +52,28 @@ router.delete('/', (req, res) =>{
     });
 });
 
+//busca por id
 router.get('/:IdPedido', (req, res) => {
     const IdPedido = req.params.IdPedido;
-    res.status(200).send({
-        mensagem: `Get id ${IdPedido} funcionando na rota de itens do pedido`
-    });
+    try {
+        mysql.query(
+            'SELECT * FROM pedidos WHERE IdPedido = ?',
+            [IdPedido],
+            (err, results) => {
+                if (err) {
+                    console.error('Erro ao buscar o pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao buscar o pedido' });
+                }
+                if (results.length === 0) {
+                    return res.status(404).json({ error: 'Pedido não encontrado' });
+                }
+                res.status(200).json(results[0]);
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
 });
+
 module.exports = router;
