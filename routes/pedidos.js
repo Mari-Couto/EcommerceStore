@@ -39,7 +39,7 @@ router.post('/', (req, res) => {
     }
 });
 
-//PRECISA DE PATCH NESSE??
+//PRECISA DE PATCH NESSE???
 router.patch('/', (req, res) => {
     res.status(202).send({
         mensagem: 'Patch funcionando em rota de pedidos'
