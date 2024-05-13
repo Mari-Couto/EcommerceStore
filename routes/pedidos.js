@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
 router.post('/', (req, res) => {
     try {
         mysql.query(
-            'INSERT INTO pedidos (DataPedido, ValorTotal) VALUES (NOW(), (SELECT SUM(Quantidade * Preco_unitario) FROM pedidosItens))',
+            'INSERT INTO pedidos (DataPedido, ValorTotal) VALUES (NOW(), (SELECT SUM(Quantidade * Preco) FROM pedidosItens))',
             (err, result) => {
                 if (err) {
                     console.error('Erro ao inserir pedido:', err);
@@ -37,13 +37,6 @@ router.post('/', (req, res) => {
         console.error('Erro ao processar a requisição:', error);
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
-});
-
-//PRECISA DE PATCH NESSE???
-router.patch('/', (req, res) => {
-    res.status(202).send({
-        mensagem: 'Patch funcionando em rota de pedidos'
-    });
 });
 
 // Delete do pedido

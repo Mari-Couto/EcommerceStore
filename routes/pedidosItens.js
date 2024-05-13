@@ -24,14 +24,14 @@ router.get('/', (req, res) => {
 
 //Inserir item do pedido
 router.post('/', (req, res) => {
-    const { IdPedido, IdProduto, Quantidade, Preco_unitario } = req.body;
-    if (!IdProduto || !Quantidade || !Preco_unitario) {
+    const { IdPedido, IdProduto, Quantidade, Preco } = req.body;
+    if (!IdProduto || !Quantidade || !Preco) {
         return res.status(400).json({ error: 'Todos os campos são obrigatórios:' });
     }
     try {
         mysql.query(
-            'INSERT INTO pedidosItens (IdPedido, IdProduto, Quantidade, Preco_unitario) VALUES (?, ?, ?, ?)',
-            [IdPedido, IdProduto, Quantidade, Preco_unitario],
+            'INSERT INTO pedidosItens (IdPedido, IdProduto, Quantidade, Preco) VALUES (?, ?, ?, ?)',
+            [IdPedido, IdProduto, Quantidade, Preco],
             (err, result) => {
                 if (err) {
                     console.error('Erro ao inserir item de pedido:', err);
@@ -49,11 +49,12 @@ router.post('/', (req, res) => {
 //alterar item de pedido
 router.patch('/:IdPedidoItem', (req, res) => {
     const IdPedidoItem = req.params.IdPedidoItem;
-    const { IdPedido, IdProduto, Quantidade, Preco_unitario } = req.body;
+    const { Quantidade, Preco } = req.body;
+
     try {
         mysql.query(
-            'UPDATE pedidosItens SET IdPedido = ?, IdProduto = ?, Quantidade = ?, Preco_unitario = ? WHERE IdPedidoItem = ?',
-            [IdPedido, IdProduto, Quantidade, Preco_unitario, IdPedidoItem],
+            'UPDATE pedidosItens SET Quantidade = ?, Preco = ? WHERE IdPedidoItem = ?',
+            [Quantidade, Preco, IdPedidoItem],
             (err, result) => {
                 if (err) {
                     console.error('Erro ao atualizar item de pedido:', err);
@@ -70,6 +71,7 @@ router.patch('/:IdPedidoItem', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
 
 //deletar item de pedido
 router.delete('/:IdPedidoItem', (req, res) => {

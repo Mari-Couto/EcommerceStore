@@ -4,17 +4,17 @@ const mysql = require('../mysql')
 const Produtos = require('../models/produtosModel');
 
   //Exibi os produtos
-router.get('/', (req, res) => {
-  try {
-    mysql.query(`SELECT 
-        produtos.IdProduto, 
-        produtos.nome, 
-        produtos.descricao, 
-        produtos.precoProduto, 
-        produtos.quantidadeestoque,
-        categorias.nomeCategoria AS categoria
-    FROM produtos
-    JOIN categorias ON produtos.IdCategoria = categorias.IdCategoria`, (err, results) => {
+  router.get('/', (req, res) => {
+    try {
+      mysql.query(`SELECT 
+          p.IdProduto, 
+          p.nome, 
+          p.descricao, 
+          p.precoProduto, 
+          p.quantidadeestoque,
+          categorias.nomeCategoria AS categoria
+      FROM produtos as p
+      JOIN categorias ON p.IdCategoria = categorias.IdCategoria`, (err, results) => {
       if (err) {
         throw err;
       }
