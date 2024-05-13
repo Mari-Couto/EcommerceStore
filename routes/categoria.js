@@ -36,7 +36,7 @@ router.get('/:IdCategoria', (req, res) => {
                 throw err;
             }
             if (results.length === 0) {
-                return res.status(404).json({ error: 'Categoria não encontrada' });
+                return res.status(404).json({ error: `Categoria com o ID #${IdCategoria} não encontrada` });
             }
             const categoria = {
                 IdCategoria: results[0].IdCategoria,
@@ -86,7 +86,7 @@ router.patch('/:IdCategoria', (req, res) => {
             if (result.affectedRows > 0) {
                 return res.status(200).json({ message: 'Categoria atualizada com sucesso' });
             } else {
-                return res.status(404).json({ error: 'Categoria não encontrada' });
+                return res.status(404).json({ error: `Categoria com o ID #${IdCategoria} não encontrada` });
             }
         });
     } catch (error) {
@@ -105,9 +105,9 @@ router.delete('/:IdCategoria', (req, res) => {
                 res.status(500).json({ error: 'Erro ao excluir categoria' });
             } else {
                 if (result.affectedRows > 0) {
-                    res.status(200).json({ message: 'Categoria excluída com sucesso' });
+                    res.status(200).json({ message: `Categoria com o ID #${IdCategoria} excluída com sucesso` });
                 } else {
-                    res.status(404).json({ error: 'Categoria não encontrada para excluir' });
+                    res.status(404).json({ error:  `Categoria com o ID #${IdCategoria} não encontrada para` });
                 }
             }
         });
