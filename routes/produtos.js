@@ -9,8 +9,8 @@ const Produtos = require('../models/produtosModel');
       mysql.query(`SELECT 
           p.IdProduto, 
           p.nome, 
-          p.descricao, 
-          p.precoProduto, 
+          p.precoProduto,
+          p.descricao,  
           p.quantidadeestoque,
           categorias.nomeCategoria AS categoria
       FROM produtos as p
@@ -20,7 +20,7 @@ const Produtos = require('../models/produtosModel');
       }
       const produtos = results.map(item => {
         return new Produtos(
-        item.IdProduto, item.nome,item.descricao, item.precoProduto, item.quantidadeestoque, item.categoria)
+        item.IdProduto, item.nome, item.precoProduto, item.descricao, item.quantidadeestoque, item.categoria)
     });
       res.status(200).json(produtos);
     });
@@ -41,7 +41,7 @@ const Produtos = require('../models/produtosModel');
         }    
         if(results.length == 0){
             return res.status(404).send({
-                mensagem: 'Não foi encontrado nenhum produto com esse ID'
+                mensagem: `Não foi encontrado nenhum produto com o ID #${IdProduto}`
             })
         }
         const produtos = results.map(item => {
@@ -59,9 +59,9 @@ const Produtos = require('../models/produtosModel');
 // Insere os produtos
 router.post('/', (req, res) => {
   const produto = req.body; 
-  const { IdCategoria } = req.body; 
-  if (!IdCategoria) {
-      return res.status(400).json({ error: 'O IdCategoria é obrigatório' });
+  const {nome, descricao, precoProduto, quantidadeEstoque, IdCategoria } = req.body; 
+  if ( !nome || !descricao || !precoProduto || !quantidadeEstoque || !IdCategoria) {
+      return res.status(400).json({ error: 'Todos os itens são obrigatórios' });
   }
   try {
     mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria) VALUES (?,?,?,?,?)', 
@@ -70,8 +70,7 @@ router.post('/', (req, res) => {
          if (err) {
           res.status(500).json({ error: 'Erro ao inserir produto:', err });
         } else {
-          const novoProduto = new Produtos(result.insertId, produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria);
-          res.status(200).json({ message: 'Produto inserido com sucesso', produto: novoProduto });
+           res.status(200).json({ message: 'Produto inserido com sucesso'});
         }
       });
   } catch (error) {
@@ -117,7 +116,7 @@ router.post('/', (req, res) => {
           if (result.affectedRows > 0) {
             res.status(200).json({ message: 'Produto atualizado com sucesso' });
           } else {
-            res.status(404).json({ error: 'Produto não encontrado' });
+            res.status(404).json({ error: `Produto com o ID #${req.params.IdProduto} não encontrado` });
           }
         }
       });
@@ -128,20 +127,25 @@ router.post('/', (req, res) => {
   });
 
 //Deletar produto
-  router.delete('/:IdProduto', (req, res) =>{
-    try {
-     mysql.query('DELETE FROM produtos WHERE IdProduto = ?', [req.params.IdProduto], (err, result) =>{
-       if(err){
-         console.error('Erro ao excluir produto', err);
-         res.status(500).json({error: 'Erro ao excluir produto'});
-       }else{
-        res.status(202).json({mensagem: "Produto excluído com sucesso"})
-       }
-     })
-    } catch (error) {
-     console.error('Erro ao processar a rota DELETE /:IdProduto', error);
-     res.status(500).json({error: 'Erro interno ao processar a requisição'});
-    }
- });
+router.delete('/:IdProduto', (req, res) => {
+  try {
+      mysql.query('DELETE FROM produtos WHERE IdProduto = ?', [req.params.IdProduto], (err, result) => {
+          if (err) {
+              console.error('Erro ao excluir produto:', err);
+              res.status(500).json({ error: 'Erro ao excluir produto' });
+          } else {
+              if (result.affectedRows > 0) {
+                  res.status(202).json({ mensagem: `Produto com o ID #${req.params.IdProduto} excluído com sucesso` });
+              } else {
+                  res.status(404).json({ error: `Produto com o ID #${req.params.IdProduto} não encontrado` });
+              }
+          }
+      });
+  } catch (error) {
+      console.error('Erro ao processar a rota DELETE /:IdProduto:', error);
+      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+  }
+});
+
 
 module.exports = router;
