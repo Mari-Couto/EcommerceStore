@@ -1,7 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('../mysql')
+const mysql = require('../mysql');
 const Produtos = require('../models/produtosModel');
+const multer = require('multer');
+const path = require('path'); 
+const fs = require('fs'); 
+const sharp = require('sharp'); 
+const storage = require('../MulterConfig');
+const upload = multer({ storage: storage });
+
+
 
   //Exibi os produtos
   router.get('/', (req, res) => {
@@ -56,16 +64,50 @@ const Produtos = require('../models/produtosModel');
       }
     });
 
+    // Rota para exibir a imagem com o ID correspondente
+router.get('/imagem/:id', (req, res) => {
+  const id = req.params.id;
+  try {
+    mysql.query('SELECT file FROM osprodutos WHERE id = ?', [id], (err, results) => {
+      if (err) {
+        console.error('Erro ao executar a consulta:', err);
+        return res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+      }
+      if (results.length === 0 || !results[0].file) { 
+        return res.status(404).json({ error: 'Imagem não encontrada' });
+      }
+      const imageBuffer = results[0].file;
+      sharp(imageBuffer)
+        .toFormat('jpeg')
+        .toBuffer()
+        .then(convertedImageBuffer => {
+          res.writeHead(200, { 'Content-Type': 'image/jpeg' });
+          res.end(convertedImageBuffer);
+        })
+        .catch(err => {
+          console.error('Erro ao converter imagem:', err);
+          res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+        });
+    });
+  } catch (error) {
+    console.error('Erro ao processar a requisição:', error);
+    res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+  }
+});
+
 // Insere os produtos
-router.post('/', (req, res) => {
+router.post('/', upload.single('file'), (req, res) => {
+  console.log(req.file)
   const produto = req.body; 
   const {nome, descricao, precoProduto, quantidadeEstoque, IdCategoria } = req.body; 
   if ( !nome || !descricao || !precoProduto || !quantidadeEstoque || !IdCategoria) {
       return res.status(400).json({ error: 'Todos os itens são obrigatórios' });
   }
   try {
-    mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria) VALUES (?,?,?,?,?)', 
-      [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria], 
+    const fileContent = fs.readFileSync(req.file.path);
+
+    mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria, file) VALUES (?,?,?,?,?,?)', 
+      [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria, fileContent], 
        (err, result) => {
          if (err) {
           res.status(500).json({ error: 'Erro ao inserir produto:', err });
