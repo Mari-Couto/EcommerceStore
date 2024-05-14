@@ -6,7 +6,16 @@ const mysql = require('../mysql')
 router.get('/', (req, res) => {
     try {
         mysql.query(
-            'SELECT * FROM pedidosItens',
+            `SELECT 
+            produtos.Nome,
+            p.IdPedidoItem,
+            pedidos.IdPedido,
+            produtos.IdProduto,
+            p.Quantidade,
+            p.Preco
+            FROM pedidosItens as p
+            JOIN pedidos ON p.IdPedido = pedidos.IdPedido
+            JOIN produtos ON p.IdProduto = produtos.IdProduto`,
             (err, results) => {
                 if (err) {
                     console.error('Erro ao buscar itens do pedido:', err);

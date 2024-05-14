@@ -6,25 +6,33 @@ const mysql = require('../mysql')
 router.get('/', (req, res) => {
     try {
         mysql.query(
-            'SELECT * FROM pedidos',
+            `SELECT 
+                pedidos.IdPedido,
+                pedidos.DataPedido,
+                SUM(pedidosItens.Quantidade * pedidosItens.Preco) AS ValorTotal
+            FROM pedidos
+            LEFT JOIN pedidosItens ON pedidos.IdPedido = pedidosItens.IdPedido
+            GROUP BY pedidos.IdPedido`,
             (err, results) => {
                 if (err) {
-                    console.error('Erro ao buscar o pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao buscar o pedido' });
+                    console.error('Erro ao buscar pedidos:', err);
+                    return res.status(500).json({ error: 'Erro ao buscar pedidos' });
                 }
                 res.status(200).json(results);
-            });
+            }
+        );
     } catch (error) {
         console.error('Erro ao processar a requisição:', error);
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
 
+
 // Inserir pedido
 router.post('/', (req, res) => {
     try {
         mysql.query(
-            'INSERT INTO pedidos (DataPedido, ValorTotal) VALUES (NOW(), (SELECT SUM(Quantidade * Preco) FROM pedidosItens))',
+            'INSERT INTO pedidos (DataPedido, ValorTotal) VALUES (NOW(), 0)',
             (err, result) => {
                 if (err) {
                     console.error('Erro ao inserir pedido:', err);
@@ -38,6 +46,8 @@ router.post('/', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
+
 
 // Delete do pedido
 router.delete('/:IdPedido', (req, res) => {
