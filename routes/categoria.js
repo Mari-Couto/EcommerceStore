@@ -107,7 +107,7 @@ router.delete('/:IdCategoria', (req, res) => {
                 if (result.affectedRows > 0) {
                     res.status(200).json({ message: `Categoria com o ID #${IdCategoria} excluída com sucesso` });
                 } else {
-                    res.status(404).json({ error:  `Categoria com o ID #${IdCategoria} não encontrada para` });
+                    res.status(404).json({ error:  `Categoria com o ID #${IdCategoria} não encontrada para excluir` });
                 }
             }
         });

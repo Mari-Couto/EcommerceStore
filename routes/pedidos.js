@@ -53,7 +53,7 @@ router.delete('/:IdPedido', (req, res) => {
                     return res.status(500).json({ error: 'Erro ao excluir o pedido' });
                 }
                 if (result.affectedRows === 0) {
-                    return res.status(404).json({ error: 'Pedido não encontrado' });
+                    return res.status(404).json({ error:`Pedido com o ID #${IdPedido} não encontrado para excluir` });
                 }
                 res.status(202).json({ mensagem: 'Pedido excluído com sucesso' });
             }
@@ -78,7 +78,7 @@ router.get('/:IdPedido', (req, res) => {
                     return res.status(500).json({ error: 'Erro ao buscar o pedido' });
                 }
                 if (results.length === 0) {
-                    return res.status(404).json({ error: 'Pedido não encontrado' });
+                    return res.status(404).json({ error: `Pedido com o ID #${IdPedido} não encontrado` });
                 }
                 res.status(200).json(results[0]);
             }

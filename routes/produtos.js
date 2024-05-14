@@ -137,7 +137,7 @@ router.delete('/:IdProduto', (req, res) => {
               if (result.affectedRows > 0) {
                   res.status(202).json({ mensagem: `Produto com o ID #${req.params.IdProduto} excluído com sucesso` });
               } else {
-                  res.status(404).json({ error: `Produto com o ID #${req.params.IdProduto} não encontrado` });
+                  res.status(404).json({ error: `Produto com o ID #${req.params.IdProduto} não encontrado para excluir` });
               }
           }
       });
