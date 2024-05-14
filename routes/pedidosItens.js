@@ -34,9 +34,11 @@ router.get('/', (req, res) => {
 //Inserir item do pedido
 router.post('/', (req, res) => {
     const { IdPedido, IdProduto, Quantidade, Preco } = req.body;
-    if (!IdProduto || !Quantidade || !Preco) {
-        return res.status(400).json({ error: 'Todos os campos são obrigatórios:' });
+
+    if (!IdPedido || !IdProduto || !Quantidade || !Preco) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
     }
+
     try {
         mysql.query(
             'INSERT INTO pedidosItens (IdPedido, IdProduto, Quantidade, Preco) VALUES (?, ?, ?, ?)',
@@ -54,6 +56,7 @@ router.post('/', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
   
 //alterar item de pedido
 router.patch('/:IdPedidoItem', (req, res) => {
