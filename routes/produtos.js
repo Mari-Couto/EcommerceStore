@@ -120,7 +120,8 @@ router.post('/', upload.single('file'), (req, res) => {
 });
 
 // Alterar produto
-router.patch('/:IdProduto', (req, res) => {
+
+router.patch('/:IdProduto', upload.single('file'), (req, res) => {
   try {
     let updateQuery = 'UPDATE produtos SET ';
     const updateValues = [];
@@ -143,6 +144,11 @@ router.patch('/:IdProduto', (req, res) => {
     if (req.body.IdCategoria) {
       updateQuery += 'IdCategoria = ?, ';
       updateValues.push(req.body.IdCategoria);
+    }
+    if (req.file) {
+      updateQuery += 'file = ?, ';
+      const fileContent = fs.readFileSync(req.file.path);
+      updateValues.push(fileContent);
     }
     updateQuery = updateQuery.slice(0, -2); 
     updateQuery += ' WHERE IdProduto = ?';
