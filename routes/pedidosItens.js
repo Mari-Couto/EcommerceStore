@@ -1,33 +1,48 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
+const PedidosItens = require('../models/pedidosItensModel')
 
-//exibir itens do pedido
+
+// Exibir itens do pedido
 router.get('/', (req, res) => {
-    try {
-        mysql.query(
-            `SELECT 
+    const query = `
+        SELECT 
             produtos.Nome,
             p.IdPedidoItem,
             pedidos.IdPedido,
             produtos.IdProduto,
             p.Quantidade,
-            p.Preco
-            FROM pedidosItens as p
-            JOIN pedidos ON p.IdPedido = pedidos.IdPedido
-            JOIN produtos ON p.IdProduto = produtos.IdProduto`,
-            (err, results) => {
-                if (err) {
-                    console.error('Erro ao buscar itens do pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao buscar itens do pedido' });
-                }
-                res.status(200).json(results);
-            }
-        );
-    } catch (error) {
-        console.error('Erro ao processar a requisição:', error);
-        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-    }
+            p.Preco,
+            produtos.file AS file
+        FROM pedidosItens AS p
+        JOIN pedidos ON p.IdPedido = pedidos.IdPedido
+        JOIN produtos ON p.IdProduto = produtos.IdProduto;
+    `;
+    mysql.query(query, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar itens do pedido:', err);
+            return res.status(500).json({ error: 'Erro ao buscar itens do pedido' });
+        }
+        try {
+            const pedidosItens = results.map(item => {
+                const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
+                return new PedidosItens(
+                    item.IdPedidoItem,
+                    item.IdPedido,
+                    item.IdProduto,
+                    item.Quantidade,
+                    item.Preco,
+                    fileLink
+                );
+            });
+
+            res.status(200).json(pedidosItens);
+        } catch (error) {
+            console.error('Erro ao processar os resultados:', error);
+            res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+        }
+    });
 });
 
 
