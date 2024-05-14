@@ -54,25 +54,23 @@ router.delete('/:IdPedido', (req, res) => {
     const IdPedido = req.params.IdPedido;
 
     try {
-        mysql.query(
-            'DELETE FROM pedidos WHERE IdPedido = ?',
-            [IdPedido],
-            (err, result) => {
-                if (err) {
-                    console.error('Erro ao excluir o pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao excluir o pedido' });
-                }
-                if (result.affectedRows === 0) {
-                    return res.status(404).json({ error:`Pedido com o ID #${IdPedido} não encontrado para excluir` });
-                }
-                res.status(202).json({ mensagem: 'Pedido excluído com sucesso' });
+        mysql.query('DELETE FROM pedidos WHERE IdPedido = ?', [IdPedido], (err, result) => {
+            if (err) {
+                console.error('Erro ao excluir pedido:', err);
+                return res.status(500).json({ error: 'Erro ao excluir pedido' });
             }
-        );
+            if (result.affectedRows > 0) {
+                return res.status(202).json({ message: `Pedido com o ID #${IdPedido} excluído com sucesso` });
+            } else {
+                return res.status(404).json({ error: `Pedido com o ID #${IdPedido} não encontrado` });
+            }
+        });
     } catch (error) {
         console.error('Erro ao processar a requisição:', error);
-        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+        return res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
 
 
 // Busca por id
