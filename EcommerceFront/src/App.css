@@ -1,0 +1,21 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    height: 100vh;
+    background: #F5F5F5;
+    background-size: cover;
+    background-position: center;
+  }
+
+
+h1{
+    text-align: center;
+    color: #ffff;
+    background-color: #E74C3C;
+    border: 2px solid #3498DB;
+}
