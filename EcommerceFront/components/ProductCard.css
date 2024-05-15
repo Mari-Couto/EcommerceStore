@@ -1,0 +1,36 @@
+.product-card {
+    margin-bottom: 20px;
+    display: flex;
+    border: 2px solid #16284d;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-grow: 1;
+  }
+  
+  .product-image-container {
+    width: 200px;
+    text-align: center;
+  }
+  
+  .product-details {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .product-details h2 {
+    margin-top: 0;
+    color: #16284d;
+    font-size: 20px;
+  }
+  
+  .product-details p {
+    margin: 10px 0;
+    color: #333;
+    font-size: 16px;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: auto;
+  }
+  

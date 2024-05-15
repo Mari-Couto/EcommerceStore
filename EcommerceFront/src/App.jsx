@@ -1,4 +1,5 @@
 import Navbar from '../components/Navbar'
+import ProductCatalog from '../components/ProductCatalog'
 import './App.css'
 
 function App() {
@@ -6,6 +7,7 @@ function App() {
   
       <div>
         <Navbar/>
+        <ProductCatalog />
     </div>
   )
 }
