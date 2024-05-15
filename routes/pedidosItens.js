@@ -45,6 +45,55 @@ router.get('/', (req, res) => {
     });
 });
 
+//busca por id
+router.get('/:IdPedidoItem', (req, res) => {
+    const IdPedidoItem = req.params.IdPedidoItem;
+    try {
+        mysql.query(
+            `
+        SELECT 
+            produtos.Nome,
+            p.IdPedidoItem,
+            pedidos.IdPedido,
+            produtos.IdProduto,
+            p.Quantidade,
+            p.Preco,
+            produtos.file AS file
+        FROM pedidosItens AS p
+        JOIN pedidos ON p.IdPedido = pedidos.IdPedido
+        JOIN produtos ON p.IdProduto = produtos.IdProduto
+        WHERE p.IdPedidoItem = ?;
+    `,
+            [IdPedidoItem],
+            (err, results) => {
+                if (err) {
+                    console.error('Erro ao buscar item do pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao buscar item do pedido' });
+                }
+                if (results.length === 0) {
+                    return res.status(404).json({ error: 'Item do pedido não encontrado' });
+                }
+                const pedidosItens = results.map(item => {
+                    const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
+                    return new PedidosItens(
+                        item.IdPedidoItem,
+                        item.IdPedido,
+                        item.IdProduto,
+                        item.Quantidade,
+                        item.Preco,
+                        fileLink
+                    );
+                });
+                res.status(200).json(pedidosItens[0]);
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+});
+
+
 
 //Inserir item do pedido
 router.post('/', (req, res) => {
@@ -118,30 +167,6 @@ router.delete('/:IdPedidoItem', (req, res) => {
                 } else {
                     res.status(404).json({ error: 'Item de pedido não encontrado' });
                 }
-            }
-        );
-    } catch (error) {
-        console.error('Erro ao processar a requisição:', error);
-        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-    }
-});
-
-//busca por id
-router.get('/:IdPedidoItem', (req, res) => {
-    const IdPedidoItem = req.params.IdPedidoItem;
-    try {
-        mysql.query(
-            'SELECT * FROM pedidosItens WHERE IdPedidoItem = ?',
-            [IdPedidoItem],
-            (err, results) => {
-                if (err) {
-                    console.error('Erro ao buscar item do pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao buscar item do pedido' });
-                }
-                if (results.length === 0) {
-                    return res.status(404).json({ error: 'Item do pedido não encontrado' });
-                }
-                res.status(200).json(results[0]);
             }
         );
     } catch (error) {
