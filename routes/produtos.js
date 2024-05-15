@@ -42,21 +42,35 @@ router.get('/', (req, res) => {
 router.get('/:IdProduto', (req, res) => {
   const IdProduto = req.params.IdProduto;
   try {
-    mysql.query('SELECT * FROM produtos WHERE IdProduto = ?', [IdProduto], (err, results) => {
-      if (err) {
-        throw err;
+    mysql.query(
+      `SELECT 
+        p.IdProduto, 
+        p.nome, 
+        p.precoProduto,
+        p.descricao,  
+        p.quantidadeestoque,
+        p.file,
+        categorias.nomeCategoria AS categoria
+      FROM produtos as p
+      JOIN categorias ON p.IdCategoria = categorias.IdCategoria
+      WHERE p.IdProduto = ?`,
+      [IdProduto],
+      (err, results) => {
+        if (err) {
+          throw err;
+        }
+        if (results.length === 0) {
+          return res.status(404).send({
+            mensagem: `Não foi encontrado nenhum produto com o ID #${IdProduto}`
+          });
+        }
+        const produto = results.map(item => {
+          const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
+          return new Produtos(item.IdProduto, item.nome, item.precoProduto, item.descricao, item.quantidadeestoque, item.categoria, fileLink);
+        })[0]; 
+        res.status(200).json(produto);
       }
-      if (results.length == 0) {
-        return res.status(404).send({
-          mensagem: `Não foi encontrado nenhum produto com o ID #${IdProduto}`
-        });
-      }
-      const produtos = results.map(item => {
-        return new Produtos(
-          item.IdProduto, item.nome, item.descricao, item.precoProduto, item.quantidadeestoque, item.IdCategoria);
-      });
-      res.status(200).json(produtos);
-    });
+    );
   } catch (error) {
     console.error('Erro ao executar a consulta:', error);
     res.status(500).json({ error: 'Erro interno ao processar a requisição' });
@@ -120,7 +134,6 @@ router.post('/', upload.single('file'), (req, res) => {
 });
 
 // Alterar produto
-
 router.patch('/:IdProduto', upload.single('file'), (req, res) => {
   try {
     let updateQuery = 'UPDATE produtos SET ';

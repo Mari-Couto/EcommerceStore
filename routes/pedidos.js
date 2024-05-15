@@ -10,7 +10,7 @@ function formatarDataHora(data) {
     const horas = dataObj.getHours().toString().padStart(2, '0');
     const minutos = dataObj.getMinutes().toString().padStart(2, '0');
     const segundos = dataObj.getSeconds().toString().padStart(2, '0');
-    return `${mes}/${dia}/${ano} ${horas}:${minutos}:${segundos}`;
+    return `${mes}/${dia}/${ano} - ${horas}:${minutos}:${segundos}`;
 }
 
 // Exibir pedidos
