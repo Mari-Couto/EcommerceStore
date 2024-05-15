@@ -2,7 +2,18 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('../mysql')
 
-//exibir pedidos
+function formatarDataHora(data) {
+    const dataObj = new Date(data);
+    const dia = dataObj.getDate().toString().padStart(2, '0');
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+    const ano = dataObj.getFullYear();
+    const horas = dataObj.getHours().toString().padStart(2, '0');
+    const minutos = dataObj.getMinutes().toString().padStart(2, '0');
+    const segundos = dataObj.getSeconds().toString().padStart(2, '0');
+    return `${mes}/${dia}/${ano} ${horas}:${minutos}:${segundos}`;
+}
+
+// Exibir pedidos
 router.get('/', (req, res) => {
     try {
         mysql.query(
@@ -18,7 +29,14 @@ router.get('/', (req, res) => {
                     console.error('Erro ao buscar pedidos:', err);
                     return res.status(500).json({ error: 'Erro ao buscar pedidos' });
                 }
-                res.status(200).json(results);
+
+                const pedidosFormatados = results.map(pedido => ({
+                    IdPedido: pedido.IdPedido,
+                    DataPedido: formatarDataHora(pedido.DataPedido),
+                    ValorTotal: pedido.ValorTotal
+                }));
+
+                res.status(200).json(pedidosFormatados);
             }
         );
     } catch (error) {
