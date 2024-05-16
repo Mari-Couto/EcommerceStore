@@ -15,7 +15,6 @@ body {
 
 h1{
     text-align: center;
-    color: #ffff;
-    background-color: #E74C3C;
-    border: 2px solid #3498DB;
+    color: #000000;
+    background-color: #3498DB;
 }

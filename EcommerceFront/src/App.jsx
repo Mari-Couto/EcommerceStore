@@ -1,13 +1,21 @@
-import Navbar from '../components/Navbar'
-import ProductCatalog from '../components/ProductCatalog'
 import './App.css'
+import { Link } from 'react-router-dom';
 
 function App() {
   return (
   
       <div>
-        <Navbar/>
-        <ProductCatalog />
+              <div className="container">
+      <h1 className='title'>Bem vindo</h1>
+      <div className="buttons-container">
+      <Link to="/inicio">
+          <button className="button">Quero postar produto</button>
+        </Link>
+        <Link to="/produtos">
+          <button className="button">Quero postar produto</button>
+        </Link>
+      </div>
+    </div>
     </div>
   )
 }

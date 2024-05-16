@@ -7,7 +7,6 @@ const ProductCard = ({ product, onEdit }) => {
       <div className="product-image-container">
         {product.file && <img src={product.file} alt={product.nome} className="product-image" />}
       </div>
-      
       <div className="product-details">
         <table>
           <thead>
