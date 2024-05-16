@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; 
 import ProductCard from './ProductCard';
 import './ProductCatalog.css';
 
@@ -8,21 +9,34 @@ const ProductCatalog = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/produtos')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('A resposta da rede não foi ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
+    async function fetchProducts() {
+      try {
+        const res = await axios.get('http://localhost:3000/produtos');
+        const productsWithImages = await Promise.all(res.data.map(async product => {
+          try {
+            let imageUrl = null;
+            if (product.file) {
+              imageUrl = `http://localhost:3000/produtos/imagem/${product.IdProduto}`;
+            }
+
+            return {
+              ...product,
+              imageUrl: imageUrl
+            };
+          } catch (error) {
+            console.error('Erro ao obter imagem do produto:', error);
+            return product;
+          }
+        }));
+        setProducts(productsWithImages);
+        setLoading(false); 
+      } catch (error) {
+        console.error('Erro ao obter os produtos:', error);
+        setError(error); 
+        setLoading(false); 
+      }
+    }
+    fetchProducts();
   }, []);
 
   if (loading) {
@@ -36,7 +50,7 @@ const ProductCatalog = () => {
   return (
     <div className="product-catalog">
       {products.map(product => (
-        <ProductCard key={product.IdProduto} product={product} />
+        <ProductCard key={product.IdProduto} product={product} /> 
       ))}
     </div>
   );
