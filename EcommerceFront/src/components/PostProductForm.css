@@ -1,0 +1,27 @@
+.post-product-form {
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .post-product-form h2 {
+    margin-bottom: 20px;
+  }
+  
+  .post-product-form label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .post-product-form input,
+  .post-product-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .post-product-form button {
+    margin-right: 10px;
+  }
+  
