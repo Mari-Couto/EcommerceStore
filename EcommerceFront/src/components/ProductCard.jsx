@@ -1,11 +1,13 @@
 import React from 'react';
 import './ProductCard.css';
+import './ProductCatalog';
 
 const ProductCard = ({ product, onEdit }) => {
   return (
     <div className="product-card">
       <div className="product-image-container">
-        {product.file && <img src={product.file} alt={product.nome} className="product-image" />}
+      {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="product-image" />}
+
       </div>
       <div className="product-details">
         <table>

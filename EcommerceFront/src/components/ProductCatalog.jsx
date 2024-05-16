@@ -50,10 +50,11 @@ const ProductCatalog = () => {
   return (
     <div className="product-catalog">
       {products.map(product => (
-        <ProductCard key={product.IdProduto} product={product} /> 
+        <ProductCard key={product.idProduto} product={product} />
       ))}
     </div>
   );
+  
 };
 
 export default ProductCatalog;

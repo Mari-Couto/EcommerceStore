@@ -2,6 +2,11 @@ import './App.css'
 import { Link } from 'react-router-dom';
 
 function App() {
+  const [searchedProductId, setSearchedProductId] = useState(null);
+
+  const handleSearch = (productId) => {
+      setSearchedProductId(productId);
+  };
   return (
   
       <div>
@@ -16,6 +21,14 @@ function App() {
         </Link>
       </div>
     </div>
+    <div>
+          <Navbar onSearch={handleSearch} />
+          {searchedProductId ? (
+              <ProductCatalog productId={searchedProductId} />
+          ) : (
+              <ProductCatalog />
+          )}
+      </div>
     </div>
   )
 }
