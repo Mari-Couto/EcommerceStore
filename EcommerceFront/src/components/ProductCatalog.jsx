@@ -16,7 +16,7 @@ const ProductCatalog = () => {
           try {
             let imageUrl = null;
             if (product.file) {
-              imageUrl = `http://localhost:3000/produtos/imagem/${product.IdProduto}`;
+              imageUrl = `http://localhost:3000/produtos/imagem/${product.idProduto}`;
             }
 
             return {
