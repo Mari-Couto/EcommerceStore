@@ -4,14 +4,19 @@ import './ProductCatalog';
 import EditModal from './EditModal'; 
 
 const ProductCard = ({ product }) => {
+  const [openModal, setOpenModal] = useState(false);
+  const [productId, setProductId] = useState(null); // Defina o estado para o ID do produto
 
-  const [openModal, setOpenModal] = useState(false)
+  // Função para lidar com o clique no botão de editar
+  const handleEditClick = (id) => {
+    setOpenModal(true);
+    setProductId(idProduto); // Defina o ID do produto quando o modal for aberto
+  };
 
   return (
     <div className="product-card">
       <div className="product-image-container">
-      {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="product-image" />}
-
+        {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="product-image" />}
       </div>
       <div className="product-details">
         <table>
@@ -35,11 +40,12 @@ const ProductCard = ({ product }) => {
               <td>{product.quantidadeestoque}</td>
               <td>{product.IdCategoria}</td>
               <td>
-             <div className='button-container'>
-             <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
-               <EditModal isOpen={openModal} onClose={() => setOpenModal(false)} />
-               <button className="delete-button">Excluir</button>
-             </div>
+                <div className='button-container'>
+                <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
+<EditModal isOpen={openModal} onClose={() => setOpenModal(false)} productId={product.idProduto} />
+
+                  <button className="delete-button">Excluir</button>
+                </div>
               </td>
             </tr>
           </tbody>
