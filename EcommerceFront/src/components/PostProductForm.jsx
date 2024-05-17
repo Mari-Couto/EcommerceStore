@@ -9,7 +9,7 @@ const PostProductForm = ({ onClose }) => {
     nome: '',
     precoProduto: '',
     descricao: '',
-    quantidadeestoque: '',
+    quantidadeEstoque: '',
     IdCategoria: '',
     file: null,
   });
@@ -35,39 +35,25 @@ const PostProductForm = ({ onClose }) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      for (const key in productData) {
-        formData.append(key, productData[key]);
-      }
+      formData.append('nome', productData.nome);
+      formData.append('precoProduto', productData.precoProduto);
+      formData.append('descricao', productData.descricao);
+      formData.append('quantidadeEstoque', productData.quantidadeEstoque);
+      formData.append('IdCategoria', productData.IdCategoria);
+      formData.append('file', productData.file);
 
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
-
-      const response = await axios.post(url, formData, {
+      await axios.post(url, formData, { 
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          'Content-Type': 'multipart/form-data'
+        }
       });
-
-      console.log('Server response:', response);
 
       setMessage('Produto inserido com sucesso.');
-      setProductData({
-        nome: '',
-        precoProduto: '',
-        descricao: '',
-        quantidadeestoque: '',
-        IdCategoria: '',
-        file: null,
-      });
+      setProductData({ nome: '', precoProduto: '', descricao: '', quantidadeEstoque: '', IdCategoria: '', file: null });
     } catch (error) {
-      if (error.response) {
-        console.error('Erro ao inserir produto:', error.response.data);
-        setMessage(`Erro ao inserir produto: ${error.response.data.message}`);
-      } else {
-        console.error('Erro ao inserir produto:', error.message);
-        setMessage('Erro ao inserir produto. Por favor, tente novamente.');
-      }
+      console.error('Erro ao inserir produto:', error);
+      console.error('Detalhes do erro:', error.response?.data);
+      setMessage('Erro ao inserir produto. Por favor, tente novamente.');
     }
   };
 
@@ -89,7 +75,7 @@ const PostProductForm = ({ onClose }) => {
         </label>
         <label>
           Quantidade no estoque:
-          <input type="number" name="quantidadeestoque" value={productData.quantidadeestoque} onChange={handleChange} required />
+          <input type="number" name="quantidadeEstoque" value={productData.quantidadeEstoque} onChange={handleChange} required />
         </label>
         <label>
           Categoria:
