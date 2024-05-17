@@ -79,7 +79,8 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                     <div className="form-container">
                         <h2>Alterar Produto</h2>
                         <form onSubmit={handleEdit}>
-                            <div>
+                            <div className="form">
+                                <div>
                                 <label>Novo Nome:</label>
                                 <input type="text" name="productNome" value={productNome} onChange={handleChange} />
                             </div>
@@ -92,7 +93,7 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                                 <input type="number" name="productPreco" value={productPreco} onChange={handleChange} />
                             </div>
                             <div>
-                                <label>Nova Quantidade em estoque:</label>
+                                <label>Novo estoque:</label>
                                 <input type="number" name="productQuantidade" value={productQuantidade} onChange={handleChange} />
                             </div>
                             <div>
@@ -103,7 +104,8 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                                 <label>Imagem:</label>
                                 <input type="file" name="file" onChange={handleChange} />
                             </div>
-                            <button type="submit">Atualizar Produto</button>
+                            </div>
+                            <button type="submit" className='submit'>Atualizar Produto</button>
                         </form>
                         {message && <p className="success-message">{message}</p>}
                     </div>

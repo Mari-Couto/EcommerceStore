@@ -28,8 +28,10 @@ const DeleteProduct = ({ productId, onDelete }) => {
                <div className="background">
                  <div className='modalDelete'>
                     <h2>Tem certeza que deseja excluir este produto?</h2>
-                    <button onClick={handleConfirmDelete}>Sim</button>
-                    <button onClick={() => setShowConfirmationModal(false)}>Cancelar</button>
+                   <div className='confirmDelete'>
+                   <button onClick={handleConfirmDelete} className='yesbutton'>Sim</button>
+                    <button onClick={() => setShowConfirmationModal(false)} className='notbutton'>Cancelar</button>
+                   </div>
                 </div>
                </div>
             )}
