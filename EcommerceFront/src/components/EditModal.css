@@ -21,6 +21,15 @@
     background-color: azure;
     border-radius: 15px;
   }
+  .modalDelete {
+    position: fixed;
+    transform: translate(-50px, -50px);
+    padding: 25px;
+    width: 300px;
+    height: 180px;
+    background-color: azure;
+    border-radius: 15px;
+  }
   
   .close{
     position: absolute;

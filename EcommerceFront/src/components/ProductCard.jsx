@@ -1,16 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './ProductCard.css';
 import './ProductCatalog';
 import EditModal from './EditModal'; 
+import DeleteProduct from './DeleteProduct';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onDelete }) => {
   const [openModal, setOpenModal] = useState(false);
-  const [productId, setProductId] = useState(null); // Defina o estado para o ID do produto
 
-  // Função para lidar com o clique no botão de editar
-  const handleEditClick = (id) => {
-    setOpenModal(true);
-    setProductId(idProduto); // Defina o ID do produto quando o modal for aberto
+  const handleDeleteProduct = (productId) => {
+    onDelete(productId);
   };
 
   return (
@@ -41,10 +39,10 @@ const ProductCard = ({ product }) => {
               <td>{product.IdCategoria}</td>
               <td>
                 <div className='button-container'>
-                <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
-<EditModal isOpen={openModal} onClose={() => setOpenModal(false)} productId={product.idProduto} />
+                  <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
+                  <EditModal isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
 
-                  <button className="delete-button">Excluir</button>
+                  <DeleteProduct productId={product.idProduto} onDelete={handleDeleteProduct} />
                 </div>
               </td>
             </tr>
