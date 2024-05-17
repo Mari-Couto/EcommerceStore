@@ -35,8 +35,11 @@ const ProductCard = ({ product }) => {
               <td>{product.quantidadeestoque}</td>
               <td>{product.IdCategoria}</td>
               <td>
-              <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
+             <div className='button-container'>
+             <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
                <EditModal isOpen={openModal} onClose={() => setOpenModal(false)} />
+               <button className="delete-button">Excluir</button>
+             </div>
               </td>
             </tr>
           </tbody>
