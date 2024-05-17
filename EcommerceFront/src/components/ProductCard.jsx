@@ -1,8 +1,12 @@
-import React from 'react';
+import { useState } from 'react';
 import './ProductCard.css';
 import './ProductCatalog';
+import EditModal from './EditModal'; 
 
-const ProductCard = ({ product, onEdit }) => {
+const ProductCard = ({ product }) => {
+
+  const [openModal, setOpenModal] = useState(false)
+
   return (
     <div className="product-card">
       <div className="product-image-container">
@@ -31,9 +35,8 @@ const ProductCard = ({ product, onEdit }) => {
               <td>{product.quantidadeestoque}</td>
               <td>{product.IdCategoria}</td>
               <td>
-                <button className="edit-button" onClick={() => onEdit(product)}>
-                  Editar
-                </button>
+              <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
+               <EditModal isOpen={openModal} onClose={() => setOpenModal(false)} />
               </td>
             </tr>
           </tbody>
