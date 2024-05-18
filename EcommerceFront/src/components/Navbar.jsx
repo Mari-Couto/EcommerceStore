@@ -36,7 +36,7 @@ const Navbar = () => {
         </form>
       </div>
       <div className="navbar-icons">
-        <Link to="/perfil">
+        <Link to="/produtos">
           <FontAwesomeIcon icon={faUser} />
         </Link>
         <Link to="/carrinho">
