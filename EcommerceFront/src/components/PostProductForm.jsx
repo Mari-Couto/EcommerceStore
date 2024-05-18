@@ -85,8 +85,10 @@ const PostProductForm = ({ onClose }) => {
           Imagem:
           <input type="file" name="file" onChange={handleChange} required />
         </label>
-        <button type="submit">Postar</button>
-        <button type="button" onClick={onClose}>Cancelar</button>
+       <div className='button-containerPost'>
+       <button type="submit" className='yesbuttonPost'>Postar</button>
+        <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
+       </div>
       </form>
       {message && <p>{message}</p>}
     </div>
