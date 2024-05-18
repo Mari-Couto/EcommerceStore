@@ -9,16 +9,20 @@ const DeleteProduct = ({ productId, onDelete }) => {
     const handleDelete = async () => {
         try {
             const response = await axios.delete(`http://localhost:3000/produtos/${productId}`);
-            onDelete(productId); 
-            setMessage(response.data.message);
+            if (response.status === 202) {
+                onDelete(productId);
+                setMessage('Produto excluído com sucesso.');
+            } else {
+                setMessage('Erro ao excluir produto. Por favor, tente novamente.');
+            }
         } catch (error) {
             setMessage('Erro ao excluir produto. Por favor, tente novamente.');
         }
     };
 
     const handleConfirmDelete = () => {
-        setShowConfirmationModal(false); 
-        handleDelete(); 
+        setShowConfirmationModal(false);
+        handleDelete();
     };
 
     return (
@@ -32,10 +36,10 @@ const DeleteProduct = ({ productId, onDelete }) => {
                    <button onClick={handleConfirmDelete} className='yesbutton'>Sim</button>
                     <button onClick={() => setShowConfirmationModal(false)} className='notbutton'>Cancelar</button>
                    </div>
+                   {message && <p className="success-message">{message}</p>}
                 </div>
                </div>
             )}
-            {message && <p className="success-message">{message}</p>}
         </div>
     );
 };

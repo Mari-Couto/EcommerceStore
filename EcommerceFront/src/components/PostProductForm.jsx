@@ -96,7 +96,7 @@ const PostProductForm = ({ onClose }) => {
         <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
        </div>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className='message'>{message}</p>}
     </div>
   );
 };

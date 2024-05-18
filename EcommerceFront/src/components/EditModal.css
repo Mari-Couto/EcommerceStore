@@ -130,3 +130,29 @@
 .notbutton:hover{
   background-color: #1a9008; 
 }
+
+/* file */
+
+.file-labelEdit {
+  padding: 6px 14px;
+  color: white;
+  background-color: #6b7d93;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 160px;
+}
+
+.file-labelEdit:hover {
+  background-color: #7992ac;
+}
+
+.file-inputEdit {
+  display: none;
+}
+
+.messageFile {
+  font-size: 14px;
+  color: #383838;
+  margin-top: -12px;
+}

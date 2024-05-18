@@ -40,7 +40,7 @@ const ProductCard = ({ product, onDelete }) => {
               <td>
                 <div className='button-container'>
                   <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
-                  <EditModal isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
+                  <EditModal  productId={product.idProduto} isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
 
                   <DeleteProduct productId={product.idProduto} onDelete={handleDeleteProduct} />
                 </div>

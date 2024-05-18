@@ -10,6 +10,9 @@ const EditModal = ({ isOpen, onClose, productId }) => {
     const [productIdCategoria, setProductIdCategoria] = useState('');
     const [productImagem, setProductImagem] = useState(null);
     const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
+    const [fileName, setFileName] = useState('');
+
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -34,6 +37,10 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                 break;
             default:
                 break;
+        }
+        const file = e.target.files[0];
+        if (file) {
+          setFileName(file.name);
         }
     };
 
@@ -60,6 +67,7 @@ const EditModal = ({ isOpen, onClose, productId }) => {
     
             console.log('Resposta da API:', response.data);
             setMessage(response.data.message);
+            setMessageType('success');
             setProductNome('');
             setProductDescricao('');
             setProductPreco('');
@@ -68,7 +76,8 @@ const EditModal = ({ isOpen, onClose, productId }) => {
             setProductImagem(null);
         } catch (error) {
             console.error('Erro ao atualizar produto:', error);
-            setMessage('Erro ao atualizar produto. Por favor, tente novamente.');
+            setMessage('Erro ao atualizar produto.');
+            setMessageType('error');
         }
     };
 
@@ -101,14 +110,17 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                                 <input type="number" name="productIdCategoria" value={productIdCategoria} onChange={handleChange} />
                             </div>
                             <div>
-                                <label>Imagem:</label>
-                                <input type="file" name="file" onChange={handleChange} />
+                            <label className="file-labelEdit">
+                             Selecione a imagem:
+                           <input type="file" name="file" className="file-inputEdit" onChange={handleChange} required />
+                            </label>
+                           {fileName && <p className='messageFile'>Arquivo selecionado: {fileName}</p>}
                             </div>
                             </div>
                             <button type="submit" className='submit'>Atualizar Produto</button>
                         </form>
-                        {message && <p className="success-message">{message}</p>}
-                    </div>
+                        {message && <p className={messageType === 'success' ? 'success-message' : 'error-message'}>{message}</p>}
+                   </div>
 
                     <div className="close">
                         <button onClick={onClose} className="Buttonclose">Fechar</button>

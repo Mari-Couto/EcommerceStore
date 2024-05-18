@@ -9,6 +9,10 @@
     margin-bottom: 20px;
   }
   
+  .message{
+    font-size: 20px;
+    color: green;
+  }
   .post-product-form label {
     display: block;
     margin-bottom: 10px;
