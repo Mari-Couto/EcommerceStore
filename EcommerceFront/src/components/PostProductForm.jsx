@@ -15,6 +15,7 @@ const PostProductForm = ({ onClose }) => {
   });
 
   const [message, setMessage] = useState('');
+  const [fileName, setFileName] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -28,6 +29,10 @@ const PostProductForm = ({ onClose }) => {
         ...prevData,
         [name]: value,
       }));
+    }
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
     }
   };
 
@@ -81,10 +86,11 @@ const PostProductForm = ({ onClose }) => {
           Categoria:
           <input type="text" name="IdCategoria" value={productData.IdCategoria} onChange={handleChange} required />
         </label>
-        <label>
-          Imagem:
-          <input type="file" name="file" onChange={handleChange} required />
+        <label className="file-label">
+          Selecione a imagem:
+          <input type="file" name="file" className="file-input" onChange={handleChange} required />
         </label>
+        {fileName && <p>Arquivo selecionado: {fileName}</p>}
        <div className='button-containerPost'>
        <button type="submit" className='yesbuttonPost'>Postar</button>
         <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
