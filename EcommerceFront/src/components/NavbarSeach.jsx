@@ -7,7 +7,7 @@ import './Navbar.css';
 import ProductCard from './ProductCard';
 import PostProductForm from './PostProductForm';
 
-const NavbarSeach = () => {
+const NavbarSearch = () => {
   const [IdProduct, setIdProduct] = useState('');
   const [product, setProduct] = useState(null);
   const [message, setMessage] = useState('');
@@ -36,11 +36,7 @@ const NavbarSeach = () => {
   };
 
   const handlePostButtonClick = () => {
-    setShowPostForm(true);
-  };
-
-  const handleClosePostForm = () => {
-    setShowPostForm(false);
+    setShowPostForm(!showPostForm); 
   };
 
   return (
@@ -71,15 +67,17 @@ const NavbarSeach = () => {
           </form>
         </div>
         <div className="navbar-icons">
-          <button className="postar-produto-button" onClick={handlePostButtonClick}>Postar Produto</button>
+          <button className="postar-produto-button" onClick={handlePostButtonClick}>
+            {showPostForm ? 'Fechar Formulário' : 'Postar Produto'}
+          </button>
         </div>
       </nav>
 
       {message && <div className="search-message">{message}</div>}
       {product && <ProductCard product={product} onEdit={() => {}} />}
-      {showPostForm && <PostProductForm onClose={handleClosePostForm} />}
+      {showPostForm && <PostProductForm onClose={() => setShowPostForm(false)} />}
     </div>
   );
 };
 
-export default NavbarSeach;
+export default NavbarSearch;

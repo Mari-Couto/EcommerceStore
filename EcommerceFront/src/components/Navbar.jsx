@@ -1,18 +1,26 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 import './Navbar.css'; 
+import CarrinhoModal from './CarrinhoModal';
 
 const Navbar = () => {
+  const [openModal, setOpenModal] = useState(false);
+
   const handleSearch = (event) => {
     console.log("Pesquisa:", event.target.value);
-  }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log("Enviar formulário de pesquisa");
-  }
+  };
+
+  const handleCartClick = (event) => {
+    event.preventDefault(); 
+    setOpenModal(true); 
+  };
 
   return (
     <nav className="navbar">
@@ -39,10 +47,12 @@ const Navbar = () => {
         <Link to="/produtos">
           <FontAwesomeIcon icon={faUser} />
         </Link>
-        <Link to="/carrinho">
+        <a href="/carrinho" onClick={handleCartClick}>
           <FontAwesomeIcon icon={faShoppingCart} />
-        </Link>
+        </a>
       </div>
+
+      {openModal && <CarrinhoModal onClose={() => setOpenModal(false)} />}
     </nav>
   );
 }
