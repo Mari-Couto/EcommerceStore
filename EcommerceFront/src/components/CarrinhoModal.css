@@ -7,12 +7,12 @@
     width: 30%; 
     height: 85%;
     overflow: auto;
-    background-color: #7d93f2;
+    background-color: #3498db;
     justify-content: center;
     align-items: center;
     padding-top: 20px;
     color: #fff;
-    border-radius: 10px;
+    border-radius: 5px;
   }
   
   .modal-contentCarrinho {
@@ -43,4 +43,11 @@
     color: white;
     margin-top: auto; 
   }
-  
+  .modal-contentCarrinho h2, h4 {
+    margin-bottom: 10px;
+  }
+  .modal-contentCarrinho li {
+    margin-bottom: 14px;
+    border-bottom: 1px solid #3a3a3a; 
+    padding-bottom: 10px;
+  }
