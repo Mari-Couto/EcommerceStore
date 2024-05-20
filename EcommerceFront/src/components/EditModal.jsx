@@ -112,7 +112,7 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                             <div>
                             <label className="file-labelEdit">
                              Selecione a imagem:
-                           <input type="file" name="file" className="file-inputEdit" onChange={handleChange} required />
+                             <input type="file" name="file" className="file-inputEdit" onChange={handleChange} />
                             </label>
                            {fileName && <p className='messageFile'>Arquivo selecionado: {fileName}</p>}
                             </div>
