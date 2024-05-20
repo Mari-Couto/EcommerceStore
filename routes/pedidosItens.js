@@ -8,7 +8,7 @@ const PedidosItens = require('../models/pedidosItensModel')
 router.get('/', (req, res) => {
     const query = `
         SELECT 
-            produtos.Nome,
+            produtos.nome,
             p.IdPedidoItem,
             pedidos.IdPedido,
             produtos.IdProduto,
@@ -28,6 +28,7 @@ router.get('/', (req, res) => {
             const pedidosItens = results.map(item => {
                 const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
                 return new PedidosItens(
+                    item.nome,
                     item.IdPedidoItem,
                     item.IdPedido,
                     item.IdProduto,
@@ -52,7 +53,7 @@ router.get('/:IdPedidoItem', (req, res) => {
         mysql.query(
             `
         SELECT 
-            produtos.Nome,
+            produtos.nome,
             p.IdPedidoItem,
             pedidos.IdPedido,
             produtos.IdProduto,
@@ -76,6 +77,7 @@ router.get('/:IdPedidoItem', (req, res) => {
                 const pedidosItens = results.map(item => {
                     const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
                     return new PedidosItens(
+                        item.nome,
                         item.IdPedidoItem,
                         item.IdPedido,
                         item.IdProduto,

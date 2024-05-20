@@ -1,5 +1,6 @@
 class PedidosItens {
-    constructor(IdPedidoItem, IdPedido, IdProduto, Quantidade, Preco, file) {
+    constructor(nome, IdPedidoItem, IdPedido, IdProduto, Quantidade, Preco, file) {
+        this.nome = nome;
         this.IdPedidoItem = IdPedidoItem;
         this.IdPedido = IdPedido;
         this.IdProduto = IdProduto;
