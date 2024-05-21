@@ -39,7 +39,6 @@ const CarrinhoModal = ({ onClose }) => {
     fetchOrderDetails();
   }, []);
 
-  // Função para adicionar mais uma unidade da quantidade do item e atualizar no backend
   const handleIncrement = async (itemId) => {
     try {
       const updatedOrders = orders.map(order => ({
@@ -63,7 +62,6 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
-  // Função para subtrair uma unidade da quantidade do item e atualizar no backend
   const handleDecrement = async (itemId) => {
     try {
       const updatedOrders = orders.map(order => ({
@@ -90,13 +88,11 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
-  // Função para excluir um pedido
   const handleDeleteOrder = async (orderId) => {
     try {
       const response = await axios.delete(`http://localhost:3000/pedidos/${orderId}`);
 
       if (response.status === 202) {
-        // Atualizar o estado removendo o pedido excluído
         setOrders(orders.filter(order => order.IdPedido !== orderId));
       } else {
         console.error('Erro ao excluir pedido:', response.data.error);
@@ -114,21 +110,27 @@ const CarrinhoModal = ({ onClose }) => {
         {!loading && !error && (
           <>
             <h2>Carrinho de Compras</h2>
-            <h4>Pedidos:</h4>
+            <h3>Pedidos:</h3>
             {orders.length > 0 ? (
               orders.map(order => (
                 <div key={order.IdPedido} className="order-container">
                   <p className="order-title">
-                    Pedido ID: {order.IdPedido}, Data: {order.DataPedido}, Valor Total: R$ {order.ValorTotal}
+                    Pedido ID: {order.IdPedido}, Data: {order.DataPedido}
                   </p>
-                  <h4>Itens:</h4>
                   <ul>
                     {order.items.map(item => (
                       <li key={item.IdPedidoItem}>
-                        <span className="item-name">{item.nome}</span>, Quantidade: {item.Quantidade}, Preço: R$ {item.Preco}
-                        <button onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
-                        <button onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
-                        <button onClick={() => handleDeleteOrder(order.IdPedido)}>Excluir Pedido</button>
+                        <span className="item-name">{item.nome}</span>
+                        <div className='item-quantidade'>
+                        <span>Quantidade: {item.Quantidade}</span>
+                        <button className='buttonQuantidade' onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
+                        <button className='buttonQuantidade' onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
+                        </div>
+                        <span className='item-preco'>Preço: R$ {item.Preco}</span>
+
+                        <span className='valorTotal'>Valor Total: R$ {order.ValorTotal}</span>
+
+                        <button className='buttonDelete' onClick={() => handleDeleteOrder(order.IdPedido)}>Excluir Pedido</button>
                       </li>
                     ))}
                   </ul>

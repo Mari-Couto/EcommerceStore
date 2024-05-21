@@ -51,8 +51,25 @@
     border-bottom: 1px solid #3a3a3a; 
     padding-bottom: 10px;
   }
+
+  .item-quantidade {
+  margin-bottom: 10px;
+  }
+  .item-preco {
+    display: flex;
+    flex-direction: column;
+  }
   
-  button {
+  
+  .item-name {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 25px;
+    font-weight: 900;
+  }
+  
+  
+  .buttonQuantidade {
     margin-left: 10px;
     padding: 3px 7px;
     font-size: 16px;
@@ -63,6 +80,27 @@
     cursor: pointer;
   }
   
-  button:hover {
+  .buttonQuantidade:hover {
     background-color: #272eae;
+  }
+
+  .valorTotal{
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .buttonDelete{
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 3px 7px;
+    font-size: 12px;
+    background-color: #c41a1a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .buttonQuantidade:hover {
+    background-color: rgb(181, 20, 20);
   }
