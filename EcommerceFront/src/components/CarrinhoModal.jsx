@@ -39,7 +39,7 @@ const CarrinhoModal = ({ onClose }) => {
     fetchOrderDetails();
   }, []);
 
-
+  // Função para adicionar mais uma unidade da quantidade do item e atualizar no backend
   const handleIncrement = async (itemId) => {
     try {
       const updatedOrders = orders.map(order => ({
@@ -48,6 +48,7 @@ const CarrinhoModal = ({ onClose }) => {
           if (item.IdPedidoItem === itemId) {
             const newQuantity = item.Quantidade + 1;
 
+            // Atualizar quantidade no backend
             axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
 
             return { ...item, Quantidade: newQuantity };
@@ -62,6 +63,7 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
+  // Função para subtrair uma unidade da quantidade do item e atualizar no backend
   const handleDecrement = async (itemId) => {
     try {
       const updatedOrders = orders.map(order => ({
@@ -70,7 +72,9 @@ const CarrinhoModal = ({ onClose }) => {
           if (item.IdPedidoItem === itemId) {
             const newQuantity = item.Quantidade - 1;
 
+            // Verifica se a nova quantidade é pelo menos 1
             if (newQuantity >= 1) {
+              // Atualizar quantidade no backend
               axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
               
               return { ...item, Quantidade: newQuantity };
@@ -83,6 +87,22 @@ const CarrinhoModal = ({ onClose }) => {
       setOrders(updatedOrders);
     } catch (error) {
       console.error('Erro ao atualizar a quantidade do item de pedido:', error);
+    }
+  };
+
+  // Função para excluir um pedido
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/pedidos/${orderId}`);
+
+      if (response.status === 202) {
+        // Atualizar o estado removendo o pedido excluído
+        setOrders(orders.filter(order => order.IdPedido !== orderId));
+      } else {
+        console.error('Erro ao excluir pedido:', response.data.error);
+      }
+    } catch (error) {
+      console.error('Erro ao excluir pedido:', error);
     }
   };
 
@@ -108,6 +128,7 @@ const CarrinhoModal = ({ onClose }) => {
                         <span className="item-name">{item.nome}</span>, Quantidade: {item.Quantidade}, Preço: R$ {item.Preco}
                         <button onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
                         <button onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
+                        <button onClick={() => handleDeleteOrder(order.IdPedido)}>Excluir Pedido</button>
                       </li>
                     ))}
                   </ul>
