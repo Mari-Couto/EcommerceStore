@@ -39,6 +39,53 @@ const CarrinhoModal = ({ onClose }) => {
     fetchOrderDetails();
   }, []);
 
+
+  const handleIncrement = async (itemId) => {
+    try {
+      const updatedOrders = orders.map(order => ({
+        ...order,
+        items: order.items.map(item => {
+          if (item.IdPedidoItem === itemId) {
+            const newQuantity = item.Quantidade + 1;
+
+            axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
+
+            return { ...item, Quantidade: newQuantity };
+          }
+          return item;
+        })
+      }));
+
+      setOrders(updatedOrders);
+    } catch (error) {
+      console.error('Erro ao atualizar a quantidade do item de pedido:', error);
+    }
+  };
+
+  const handleDecrement = async (itemId) => {
+    try {
+      const updatedOrders = orders.map(order => ({
+        ...order,
+        items: order.items.map(item => {
+          if (item.IdPedidoItem === itemId) {
+            const newQuantity = item.Quantidade - 1;
+
+            if (newQuantity >= 1) {
+              axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
+              
+              return { ...item, Quantidade: newQuantity };
+            }
+          }
+          return item;
+        })
+      }));
+
+      setOrders(updatedOrders);
+    } catch (error) {
+      console.error('Erro ao atualizar a quantidade do item de pedido:', error);
+    }
+  };
+
   return (
     <div className="modalCarrinho">
       <div className="modal-contentCarrinho">
@@ -50,15 +97,17 @@ const CarrinhoModal = ({ onClose }) => {
             <h4>Pedidos:</h4>
             {orders.length > 0 ? (
               orders.map(order => (
-                <div key={order.IdPedido}>
-                  <p>
+                <div key={order.IdPedido} className="order-container">
+                  <p className="order-title">
                     Pedido ID: {order.IdPedido}, Data: {order.DataPedido}, Valor Total: R$ {order.ValorTotal}
                   </p>
                   <h4>Itens:</h4>
                   <ul>
                     {order.items.map(item => (
                       <li key={item.IdPedidoItem}>
-                        {item.nome}, Quantidade: {item.Quantidade}, Preço: R$ {item.Preco}
+                        <span className="item-name">{item.nome}</span>, Quantidade: {item.Quantidade}, Preço: R$ {item.Preco}
+                        <button onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
+                        <button onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
                       </li>
                     ))}
                   </ul>

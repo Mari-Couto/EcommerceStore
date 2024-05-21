@@ -127,21 +127,21 @@ router.post('/', (req, res) => {
 //alterar item de pedido
 router.patch('/:IdPedidoItem', (req, res) => {
     const IdPedidoItem = req.params.IdPedidoItem;
-    const { Quantidade, Preco } = req.body;
+    const { Quantidade } = req.body;
 
     try {
         mysql.query(
-            'UPDATE pedidosItens SET Quantidade = ?, Preco = ? WHERE IdPedidoItem = ?',
-            [Quantidade, Preco, IdPedidoItem],
+            'UPDATE pedidosItens SET Quantidade = ? WHERE IdPedidoItem = ?',
+            [Quantidade, IdPedidoItem],
             (err, result) => {
                 if (err) {
-                    console.error('Erro ao atualizar item de pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao atualizar item de pedido' });
+                    console.error('Erro ao atualizar a quantidade do item de pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao atualizar a quantidade do item de pedido' });
                 }
                 if (result.affectedRows === 0) {
                     return res.status(404).json({ error: 'Item de pedido não encontrado' });
                 }
-                res.status(200).json({ message: 'Item de pedido atualizado com sucesso' });
+                res.status(200).json({ message: 'Quantidade do item de pedido atualizada com sucesso' });
             }
         );
     } catch (error) {
@@ -149,6 +149,7 @@ router.patch('/:IdPedidoItem', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
 
 
 //deletar item de pedido
