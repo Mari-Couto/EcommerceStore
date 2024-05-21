@@ -4,17 +4,29 @@ import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-ic
 import { useState } from 'react';
 import './Navbar.css'; 
 import CarrinhoModal from './CarrinhoModal';
+import axios from 'axios';
+import OneProductsHome from './OneProductHome';
 
 const Navbar = () => {
   const [openModal, setOpenModal] = useState(false);
-
-  const handleSearch = (event) => {
-    console.log("Pesquisa:", event.target.value);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  const [showPostForm, setShowPostForm] = useState(false);
+  
+  const handlePostButtonClick = () => {
+    setShowPostForm(!showPostForm); 
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Enviar formulário de pesquisa");
+    try {
+      const response = await axios.get(`http://localhost:3000/produtos/busca/${searchQuery}`);
+      setProducts(response.data);
+      setShowPostForm(true); // Mostrar os produtos encontrados
+      console.log("Produtos encontrados:", response.data);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+    }
   };
 
   const handleCartClick = (event) => {
@@ -23,37 +35,46 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-logo">
-        <Link to="/" className="logo-text">
-          ShopEase
-        </Link>
-      </div>
-      <div className="navbar-links">
-        <Link to="/">Início</Link>
-        <Link to="/produtos">Produtos</Link>
-        <Link to="/sobre">Sobre</Link>
-        <Link to="/contato">Contato</Link>
-      </div>
-      <div className="navbar-search">
-        <form onSubmit={handleSubmit}>
-          <input type="text" placeholder="Buscar..." onChange={handleSearch} />
-          <button type="submit">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </form>
-      </div>
-      <div className="navbar-icons">
-        <Link to="/produtos">
-          <FontAwesomeIcon icon={faUser} />
-        </Link>
-        <a href="/carrinho" onClick={handleCartClick}>
-          <FontAwesomeIcon icon={faShoppingCart} />
-        </a>
-      </div>
+    <div>
+      <nav className="navbar">
+        <div className="navbar-logo">
+          <Link to="/" className="logo-text">
+            ShopEase
+          </Link>
+        </div>
+        <div className="navbar-links">
+          <Link to="/">Início</Link>
+          <Link to="/produtos">Produtos</Link>
+          <Link to="/sobre">Sobre</Link>
+          <Link to="/contato">Contato</Link>
+        </div>
+        <div className="navbar-search">
+          <form onSubmit={handleSubmit}>
+            <input 
+              type="text" 
+              value={searchQuery}
+              placeholder="Buscar por nome..." 
+              onChange={(ev) => setSearchQuery(ev.target.value)} 
+            />
+            <button type="submit">
+              <FontAwesomeIcon icon={faSearch} />
+            </button>
+          </form>
+        </div>
+        <div className="navbar-icons">
+          <Link to="/produtos">
+            <FontAwesomeIcon icon={faUser} />
+          </Link>
+          <a href="/carrinho" onClick={handleCartClick}>
+            <FontAwesomeIcon icon={faShoppingCart} />
+          </a>
+        </div>
 
-      {openModal && <CarrinhoModal onClose={() => setOpenModal(false)} />}
-    </nav>
+        {openModal && <CarrinhoModal onClose={() => setOpenModal(false)} />}
+      </nav>
+    
+      {showPostForm && <OneProductsHome products={products} onClose={() => setShowPostForm(false)} />}
+    </div>
   );
 }
 

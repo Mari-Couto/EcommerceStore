@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './ProductCard.css';
-import './ProductCatalog';
 import EditModal from './EditModal'; 
 import DeleteProduct from './DeleteProduct';
 
 const ProductCard = ({ product, onDelete }) => {
-  const [openModal, setOpenModal] = useState(false);
-
-  const handleDeleteProduct = (productId) => {
-    onDelete(productId);
-  };
+  const [openModal, setOpenModal] = React.useState(false);
 
   return (
     <div className="product-card">
@@ -41,8 +36,7 @@ const ProductCard = ({ product, onDelete }) => {
                 <div className='button-container'>
                   <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
                   <EditModal  productId={product.idProduto} isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
-
-                  <DeleteProduct productId={product.idProduto} onDelete={handleDeleteProduct} />
+                  <DeleteProduct productId={product.idProduto} onDelete={onDelete} />
                 </div>
               </td>
             </tr>

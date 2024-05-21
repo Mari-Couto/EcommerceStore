@@ -77,7 +77,6 @@ router.get('/:IdProduto', (req, res) => {
   }
 });
 
-// Rota para exibir a imagem com o ID correspondente
 router.get('/imagem/:id', (req, res) => {
   const id = req.params.id;
   try {
@@ -108,30 +107,47 @@ router.get('/imagem/:id', (req, res) => {
   }
 });
 
-// Insere os produtos
-router.post('/', upload.single('file'), (req, res) => {
-  const produto = req.body; 
-  const { nome, descricao, precoProduto, quantidadeEstoque, IdCategoria } = req.body; 
-  if (!nome || !descricao || !precoProduto || !quantidadeEstoque || !IdCategoria) {
-    return res.status(400).json({ error: 'Todos os itens são obrigatórios' });
-  }
+// Buscar produto por nome
+router.get('/busca/:nomeProduto', (req, res) => {
+  const nomeProduto = req.params.nomeProduto;
   try {
-    const fileContent = fs.readFileSync(req.file.path);
-
-    mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria, file) VALUES (?,?,?,?,?,?)', 
-      [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria, fileContent], 
-      (err, result) => {
+    mysql.query(
+      `SELECT 
+        p.IdProduto, 
+        p.nome, 
+        p.precoProduto,
+        p.descricao,  
+        p.quantidadeestoque,
+        p.file,
+        categorias.nomeCategoria AS categoria
+      FROM produtos as p
+      JOIN categorias ON p.IdCategoria = categorias.IdCategoria
+      WHERE p.nome LIKE ?`,
+      [`%${nomeProduto}%`],
+      (err, results) => {
         if (err) {
-          res.status(500).json({ error: 'Erro ao inserir produto:', err });
-        } else {
-          res.status(200).json({ message: 'Produto inserido com sucesso' });
+          console.error('Erro ao executar a consulta:', err);
+          res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+          return;
         }
-      });
+        if (results.length === 0) {
+          return res.status(404).send({
+            mensagem: `Não foi encontrado nenhum produto com o nome '${nomeProduto}'`
+          });
+        }
+        const produtos = results.map(item => {
+          const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
+          return new Produtos(item.IdProduto, item.nome, item.precoProduto, item.descricao, item.quantidadeestoque, item.categoria, fileLink);
+        });
+        res.status(200).json(produtos);
+      }
+    );
   } catch (error) {
-    console.error('Erro ao executar a consulta:', error);
+    console.error('Erro ao processar a requisição:', error);
     res.status(500).json({ error: 'Erro interno ao processar a requisição' });
   }
 });
+
 
 // Alterar produto
 router.patch('/:IdProduto', upload.single('file'), (req, res) => {
