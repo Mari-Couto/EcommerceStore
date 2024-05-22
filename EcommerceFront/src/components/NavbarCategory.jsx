@@ -12,11 +12,14 @@ const NavbarCategory = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = (event) => {e
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+    } catch (error) {
+    }
   };
 
   const handlePostButtonClick = () => {
@@ -74,27 +77,27 @@ const NavbarCategory = () => {
       </nav>
 
       {showPostForm && (
-        <div className="post-form">
+        <div className="post-product-form">
+          <h2>Nova Categoria</h2>
           <form onSubmit={handlePostCategory}>
+            <label htmlFor="categoryName">Nome da Categoria</label>
             <input
               type="text"
+              id="categoryName"
               placeholder="Nome da nova categoria"
               value={newCategoryName}
               onChange={handleNewCategoryNameChange}
               required
             />
-            <button type="submit">Postar Categoria</button>
+            <div className="button-containerPost">
+              <button type="submit" className="yesbuttonPost">Postar Categoria</button>
+              <button type="button" className="notbuttonPost" onClick={handlePostButtonClick}>Cancelar</button>
+            </div>
           </form>
         </div>
       )}
 
-      {message && <div className="search-message">{message}</div>}
-
-      <div className="category-list">
-        {categories.map(category => (
-          <CategoryCard key={category.IdCategoria} category={category} />
-        ))}
-      </div>
+      {message && <div className="message">{message}</div>}
     </div>
   );
 };
