@@ -1,9 +1,10 @@
-import React from 'react'
+import React from 'react';
+import './Category.css';
 
-const CategoryCard = ({category}) => {
+const CategoryCard = ({ category }) => {
   return (
-    <div className="product-card">
-      <div className="product-details">
+    <div className="category-card">
+      <div className="category-details">
         <table>
           <thead>
             <tr>
@@ -14,12 +15,12 @@ const CategoryCard = ({category}) => {
           </thead>
           <tbody>
             <tr>
-              <td>{category.IdCategoria}</td>
-              <td>{category.nomeCategoria}</td>
+              <td className='categoriesNames'>{category.IdCategoria}</td>
+              <td className='categoriesNames'>{category.nomeCategoria}</td>
               <td>
                 <div className='button-container'>
                   <button className="edit-button">Editar</button>
-                  <button className="edit-button">Excluir</button>
+                  <button className="delete-button">Excluir</button>
                 </div>
               </td>
             </tr>
@@ -30,4 +31,4 @@ const CategoryCard = ({category}) => {
   );
 }
 
-export default CategoryCard
+export default CategoryCard;

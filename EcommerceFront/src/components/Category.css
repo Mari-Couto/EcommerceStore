@@ -1,0 +1,90 @@
+.category-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #16284d;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 115px;
+    border-left: none;
+  }
+  
+  .category-details {
+    flex: 1;
+    border-left: 2px solid #16284d;
+    position: relative;
+  }
+  
+  .category-details table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .category-details th,
+  .category-details td {
+    border-left: 2px solid #16284d;
+    border-right: 1px solid #16284d;
+    border-bottom: 1px solid #16284d;
+    padding: 10px;
+  }
+  
+  .category-details td {
+    height: 55px;
+    border-bottom: none;
+  }
+  
+  .category-details th {
+    background-color: #f8f8f8;
+    text-align: left;
+    font-weight: bold;
+  }
+  
+  .category-details th:first-child,
+  .category-details td:first-child {
+    border-left: none;
+  }
+  
+  .category-details th:last-child,
+  .category-details td:last-child {
+    border-right: none;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  .edit-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+  }
+  
+  .edit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .delete-button {
+    background-color: #db3434;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover {
+    background-color: #b30000;
+  }
+  

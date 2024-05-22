@@ -32,11 +32,11 @@ const CategoryCatalog = () => {
   }
 
   return (
-    <div className="product-catalog">
-      {categories.map((category) => ( 
-        <CategoryCard key={category.IdCategoria} category={category} />
-      ))}
-    </div>
+    <div className="category-list">
+    {categories.map(category => (
+      <CategoryCard key={category.IdCategoria} category={category} />
+    ))}
+  </div>
   );
 };
 
