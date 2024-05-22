@@ -60,7 +60,16 @@
     display: flex;
     justify-content: space-around;
   }
-  
+
+  .save-button {
+    background-color: #3c42e7;
+    color: white;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 22px;
+  }
   .edit-button {
     background-color: #3498db;
     color: white;
