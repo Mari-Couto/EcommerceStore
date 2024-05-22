@@ -9,16 +9,22 @@ import CategoryCard from './CategoryCard';
 const NavbarCategory = () => {
   const [message, setMessage] = useState('');
   const [showPostForm, setShowPostForm] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [searchId, setSearchId] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
 
-  const handleSearchChange = (event) => {e
+  const handleSearchChange = (event) => {
+    setSearchId(event.target.value);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
+      setSearchResult(response.data);
+      setMessage('');
     } catch (error) {
+      setSearchResult(null);
+      setMessage('Categoria não encontrada.');
     }
   };
 
@@ -26,20 +32,10 @@ const NavbarCategory = () => {
     setShowPostForm(!showPostForm); 
   };
 
-  const handleNewCategoryNameChange = (event) => {
-    setNewCategoryName(event.target.value);
-  };
-
-  const handlePostCategory = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3000/categoria', { nomeCategoria: newCategoryName });
-      setCategories([...categories, response.data]);
-      setNewCategoryName('');
-      setShowPostForm(false);
-      setMessage('Categoria criada com sucesso.');
-    } catch (error) {
-      setMessage('Erro ao criar categoria. Por favor, tente novamente.');
+  const handleDelete = (deletedId) => {
+    if (searchResult && searchResult.IdCategoria === deletedId) {
+      setSearchResult(null);
+      setMessage('Categoria excluída com sucesso.');
     }
   };
 
@@ -62,6 +58,7 @@ const NavbarCategory = () => {
             <input
               type="text"
               placeholder="Buscar por Id..."
+              value={searchId}
               onChange={handleSearchChange}
             />
             <button type="submit">
@@ -76,28 +73,14 @@ const NavbarCategory = () => {
         </div>
       </nav>
 
-      {showPostForm && (
-        <div className="post-product-form">
-          <h2>Nova Categoria</h2>
-          <form onSubmit={handlePostCategory}>
-            <label htmlFor="categoryName">Nome da Categoria</label>
-            <input
-              type="text"
-              id="categoryName"
-              placeholder="Nome da nova categoria"
-              value={newCategoryName}
-              onChange={handleNewCategoryNameChange}
-              required
-            />
-            <div className="button-containerPost">
-              <button type="submit" className="yesbuttonPost">Postar Categoria</button>
-              <button type="button" className="notbuttonPost" onClick={handlePostButtonClick}>Cancelar</button>
-            </div>
-          </form>
-        </div>
-      )}
+      {message && <div className="search-message">{message}</div>}
 
-      {message && <div className="message">{message}</div>}
+      {searchResult && (
+        <CategoryCard 
+          category={searchResult} 
+          onDelete={handleDelete} 
+        />
+      )}
     </div>
   );
 };
