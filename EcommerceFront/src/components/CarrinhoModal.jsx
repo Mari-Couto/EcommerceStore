@@ -6,6 +6,8 @@ const CarrinhoModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [orderIdToDelete, setOrderIdToDelete] = useState(null);
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -47,7 +49,6 @@ const CarrinhoModal = ({ onClose }) => {
           if (item.IdPedidoItem === itemId) {
             const newQuantity = item.Quantidade + 1;
 
-            // Atualizar quantidade no backend
             axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
 
             return { ...item, Quantidade: newQuantity };
@@ -70,9 +71,7 @@ const CarrinhoModal = ({ onClose }) => {
           if (item.IdPedidoItem === itemId) {
             const newQuantity = item.Quantidade - 1;
 
-            // Verifica se a nova quantidade é pelo menos 1
             if (newQuantity >= 1) {
-              // Atualizar quantidade no backend
               axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
               
               return { ...item, Quantidade: newQuantity };
@@ -88,18 +87,31 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
-  const handleDeleteOrder = async (orderId) => {
+  const handleDeleteOrder = (orderId) => {
+    setShowConfirmationModal(true);
+    setOrderIdToDelete(orderId);
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:3000/pedidos/${orderId}`);
+      const response = await axios.delete(`http://localhost:3000/pedidos/${orderIdToDelete}`);
 
       if (response.status === 202) {
-        setOrders(orders.filter(order => order.IdPedido !== orderId));
+        setOrders(orders.filter(order => order.IdPedido !== orderIdToDelete));
       } else {
         console.error('Erro ao excluir pedido:', response.data.error);
       }
     } catch (error) {
       console.error('Erro ao excluir pedido:', error);
+    } finally {
+      setShowConfirmationModal(false);
+      setOrderIdToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmationModal(false);
+    setOrderIdToDelete(null);
   };
 
   return (
@@ -122,14 +134,12 @@ const CarrinhoModal = ({ onClose }) => {
                       <li key={item.IdPedidoItem}>
                         <span className="item-name">{item.nome}</span>
                         <div className='item-quantidade'>
-                        <span>Quantidade: {item.Quantidade}</span>
-                        <button className='buttonQuantidade' onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
-                        <button className='buttonQuantidade' onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
+                          <span>Quantidade: {item.Quantidade}</span>
+                          <button className='buttonQuantidade' onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
+                          <button className='buttonQuantidade' onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
                         </div>
                         <span className='item-preco'>Preço: R$ {item.Preco}</span>
-
                         <span className='valorTotal'>Valor Total: R$ {order.ValorTotal}</span>
-
                         <button className='buttonDelete' onClick={() => handleDeleteOrder(order.IdPedido)}>Excluir Pedido</button>
                       </li>
                     ))}
@@ -145,6 +155,18 @@ const CarrinhoModal = ({ onClose }) => {
           &times;
         </span>
       </div>
+      
+      {showConfirmationModal && (
+        <div className="background">
+          <div className='modalDelete'>
+            <h2>Tem certeza que deseja excluir este pedido?</h2>
+            <div className='confirmDelete'>
+              <button onClick={handleConfirmDelete} className='yesbutton'>Sim</button>
+              <button onClick={handleCancelDelete} className='notbutton'>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
