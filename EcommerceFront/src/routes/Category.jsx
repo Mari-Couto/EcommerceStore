@@ -1,10 +1,10 @@
 import CategoryCatalog from '../components/CategoryCatalog';
-import NavbarSearch from '../components/NavbarSeach'
+import NavbarCategory from '../components/NavbarCategory';
 
 const Category = () => {
   return (
     <div>
-        <NavbarSearch/>
+        <NavbarCategory/>
         <CategoryCatalog/>
     </div>
   )
