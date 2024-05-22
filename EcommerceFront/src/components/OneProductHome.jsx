@@ -1,18 +1,30 @@
 import { useState } from 'react';
+import axios from 'axios'; 
 import './ProductsHome.css';
 
 const OneProductsHome = ({ products }) => {
     const [orderStatus, setOrderStatus] = useState(null); 
 
     const handleBuyButtonClick = async (product) => {
-        try {
-          const response = await axios.post('http://localhost:3000/orders', {
-            productId: product.idProduto,
-            quantity: 1 
-          });
-          setOrderStatus(`Pedido inserido com sucesso! ID do Pedido: ${response.data.IdPedido}`);
+      try {
+        const orderResponse = await axios.post('http://localhost:3000/pedidos', {
+          produtoId: product.idProduto,
+          quantidade: 1,
+          preco: product.precoProduto,
+        });
+    
+        const orderId = orderResponse.data.IdPedido;
+    
+        await axios.post('http://localhost:3000/pedidosItens', {
+          IdPedido: orderId,
+          IdProduto: product.idProduto,
+          Quantidade: 1,
+          Preco: product.precoProduto,
+        });
+          setOrderStatus(`Pedido inserido com sucesso! ID do Pedido: ${orderResponse.data.IdPedido}`);
         } catch (error) {
           setOrderStatus('Erro ao inserir pedido. Tente novamente.');
+          console.log(error)
         }
       };
 
