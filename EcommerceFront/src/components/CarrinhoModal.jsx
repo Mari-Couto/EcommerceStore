@@ -17,7 +17,6 @@ const CarrinhoModal = ({ onClose }) => {
           axios.get('http://localhost:3000/pedidos'),
           axios.get('http://localhost:3000/pedidosItens')
         ]);
-
         const ordersData = orderResponse.data;
         const itemsData = itemsResponse.data;
 

@@ -1,44 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; 
-import './ProductCatalog.css';
+import axios from 'axios';
 import CategoryCard from './CategoryCard';
 
 const CategoryCatalog = () => {
-  const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]); 
+  const [isLoading, setIsLoading] = useState(true); 
+  const [fetchError, setFetchError] = useState(null);
 
   useEffect(() => {
-    async function fetchCategory() {
+    const fetchCategories = async () => {
       try {
-        const resCatagory = await axios.get('http://localhost:3000/categoria');
-        setProducts(resCatagory);
-        setLoading(false); 
+        const response = await axios.get('http://localhost:3000/categoria'); 
+        setCategories(response.data);
       } catch (error) {
-        console.error('Erro ao obter as categorias:', error);
-        setError(error); 
-        setLoading(false); 
+        console.error('Error fetching categories:', error);
+        setFetchError(error);
+      } finally {
+        setIsLoading(false); 
       }
-    }
-    fetchCategory();
+    };
+
+    fetchCategories();
   }, []);
 
-  if (loading) {
-    return <div>Carregando...</div>;
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Erro: {error.message}</div>;
+  if (fetchError) {
+    return <div>Error: {fetchError.message}</div>;
   }
 
   return (
     <div className="product-catalog">
-      {category.map(oneCategory => (
-        <CategoryCard key={oneCategory.IdCategoria} oneCategory={oneCategory} />
+      {categories.map((category) => ( 
+        <CategoryCard key={category.IdCategoria} category={category} />
       ))}
     </div>
   );
-  
 };
 
 export default CategoryCatalog;
