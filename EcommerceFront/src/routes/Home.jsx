@@ -1,3 +1,4 @@
+import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import ProductsHome from '../components/ProductsHome'
 
@@ -6,6 +7,7 @@ const Home = () => {
     <div>
         <Navbar/>
         <ProductsHome/>
+        <Footer/>
     </div>
   )
 }
