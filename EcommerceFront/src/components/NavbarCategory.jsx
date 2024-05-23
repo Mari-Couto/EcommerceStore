@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -11,6 +11,25 @@ const NavbarCategory = () => {
   const [showPostForm, setShowPostForm] = useState(false);
   const [searchId, setSearchId] = useState('');
   const [searchResult, setSearchResult] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
+        setSearchResult(response.data);
+        setMessage('');
+      } catch (error) {
+        setSearchResult(null);
+        setMessage('Categoria não encontrada.');
+      }
+    }
+
+    if (searchId !== '') {
+      fetchData();
+    }
+  }, [searchId]);
 
   const handleSearchChange = (event) => {
     setSearchId(event.target.value);
@@ -18,18 +37,27 @@ const NavbarCategory = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
-      setSearchResult(response.data);
-      setMessage('');
-    } catch (error) {
-      setSearchResult(null);
-      setMessage('Categoria não encontrada.');
-    }
   };
 
   const handlePostButtonClick = () => {
-    setShowPostForm(!showPostForm); 
+    setShowPostForm(!showPostForm);
+  };
+
+  const handleNewCategoryNameChange = (event) => {
+    setNewCategoryName(event.target.value);
+  };
+
+  const handlePostCategory = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:3000/categoria', { nomeCategoria: newCategoryName });
+      setCategories([...categories, response.data]);
+      setNewCategoryName('');
+      setShowPostForm(false);
+      setMessage('Categoria criada com sucesso.');
+    } catch (error) {
+      setMessage('Erro ao criar categoria. Por favor, tente novamente.');
+    }
   };
 
   const handleDelete = (deletedId) => {
@@ -73,14 +101,35 @@ const NavbarCategory = () => {
         </div>
       </nav>
 
+      {showPostForm && (
+        <div className="post-form">
+          <form onSubmit={handlePostCategory}>
+            <input
+              type="text"
+              placeholder="Nome da nova categoria"
+              value={newCategoryName}
+              onChange={handleNewCategoryNameChange}
+              required
+            />
+            <button type="submit">Postar Categoria</button>
+          </form>
+        </div>
+      )}
+
       {message && <div className="search-message">{message}</div>}
 
       {searchResult && (
-        <CategoryCard 
-          category={searchResult} 
-          onDelete={handleDelete} 
+        <CategoryCard
+          category={searchResult}
+          onDelete={handleDelete}
         />
       )}
+
+      <div className="category-list">
+        {categories.map(category => (
+          <CategoryCard key={category.IdCategoria} category={category} />
+        ))}
+      </div>
     </div>
   );
 };

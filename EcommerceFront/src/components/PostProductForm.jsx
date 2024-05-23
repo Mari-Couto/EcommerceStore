@@ -24,15 +24,14 @@ const PostProductForm = ({ onClose }) => {
         ...prevData,
         [name]: files[0],
       }));
+      if (files && files[0]) {
+        setFileName(files[0].name);
+      }
     } else {
       setProductData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
-    }
-    const file = e.target.files[0];
-    if (file) {
-      setFileName(file.name);
     }
   };
 
@@ -55,6 +54,7 @@ const PostProductForm = ({ onClose }) => {
 
       setMessage('Produto inserido com sucesso.');
       setProductData({ nome: '', precoProduto: '', descricao: '', quantidadeEstoque: '', IdCategoria: '', file: null });
+      setFileName('');
     } catch (error) {
       console.error('Erro ao inserir produto:', error);
       console.error('Detalhes do erro:', error.response?.data);
@@ -91,10 +91,10 @@ const PostProductForm = ({ onClose }) => {
           <input type="file" name="file" className="file-input" onChange={handleChange} required />
         </label>
         {fileName && <p>Arquivo selecionado: {fileName}</p>}
-       <div className='button-containerPost'>
-       <button type="submit" className='yesbuttonPost'>Postar</button>
-        <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
-       </div>
+        <div className='button-containerPost'>
+          <button type="submit" className='yesbuttonPost'>Postar</button>
+          <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
+        </div>
       </form>
       {message && <p className='message'>{message}</p>}
     </div>
