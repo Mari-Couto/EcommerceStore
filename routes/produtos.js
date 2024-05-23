@@ -148,6 +148,29 @@ router.get('/busca/:nomeProduto', (req, res) => {
   }
 });
 
+router.post('/', upload.single('file'), (req, res) => {
+  const produto = req.body; 
+  const { nome, descricao, precoProduto, quantidadeEstoque, IdCategoria } = req.body; 
+  if (!nome || !descricao || !precoProduto || !quantidadeEstoque || !IdCategoria) {
+    return res.status(400).json({ error: 'Todos os itens são obrigatórios' });
+  }
+  try {
+    const fileContent = fs.readFileSync(req.file.path);
+
+    mysql.query('INSERT INTO produtos (Nome, precoProduto, descricao, QuantidadeEstoque, IdCategoria, file) VALUES (?,?,?,?,?,?)', 
+      [produto.nome, produto.precoProduto, produto.descricao, produto.quantidadeEstoque, IdCategoria, fileContent], 
+      (err, result) => {
+        if (err) {
+          res.status(500).json({ error: 'Erro ao inserir produto:', err });
+        } else {
+          res.status(200).json({ message: 'Produto inserido com sucesso' });
+        }
+      });
+  } catch (error) {
+    console.error('Erro ao executar a consulta:', error);
+    res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+  }
+});
 
 // Alterar produto
 router.patch('/:IdProduto', upload.single('file'), (req, res) => {
