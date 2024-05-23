@@ -39,7 +39,8 @@ const CategoryCard = ({ category, onDelete }) => {
   };
 
   return (
-    <div className="category-card">
+    <div className='containerCategory'>
+      <div className="category-card">
       <div className="category-details">
         <table>
           <thead>
@@ -88,6 +89,7 @@ const CategoryCard = ({ category, onDelete }) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 }

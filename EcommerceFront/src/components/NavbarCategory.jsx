@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -14,22 +14,16 @@ const NavbarCategory = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
-        setSearchResult(response.data);
-        setMessage('');
-      } catch (error) {
-        setSearchResult(null);
-        setMessage('Categoria não encontrada.');
-      }
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
+      setSearchResult(response.data);
+      setMessage('');
+    } catch (error) {
+      setSearchResult(null);
+      setMessage('Categoria não encontrada.');
     }
-
-    if (searchId !== '') {
-      fetchData();
-    }
-  }, [searchId]);
+  };
 
   const handleSearchChange = (event) => {
     setSearchId(event.target.value);
@@ -37,6 +31,7 @@ const NavbarCategory = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    fetchData();
   };
 
   const handlePostButtonClick = () => {
@@ -117,19 +112,6 @@ const NavbarCategory = () => {
       )}
 
       {message && <div className="search-message">{message}</div>}
-
-      {searchResult && (
-        <CategoryCard
-          category={searchResult}
-          onDelete={handleDelete}
-        />
-      )}
-
-      <div className="category-list">
-        {categories.map(category => (
-          <CategoryCard key={category.IdCategoria} category={category} />
-        ))}
-      </div>
     </div>
   );
 };
