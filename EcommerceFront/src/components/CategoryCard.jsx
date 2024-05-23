@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Category.css';
 
-const CategoryCard = ({ category, onDelete }) => {
+const CategoryCard = ({ category, onDelete, isSearchResult }) => {
   const [newName, setNewName] = useState(category.nomeCategoria);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -39,57 +39,57 @@ const CategoryCard = ({ category, onDelete }) => {
   };
 
   return (
-    <div className='containerCategory'>
+    <div className={`containerCategory ${isSearchResult ? 'search-result' : ''}`}>
       <div className="category-card">
-      <div className="category-details">
-        <table>
-          <thead>
-            <tr>
-              <th>Id da Categoria</th>
-              <th>Nome</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className='categoriesNames'>{category.IdCategoria}</td>
-              <td className='categoriesNames'>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={newName}
-                    onChange={handleInputChange}
-                  />
-                ) : (
-                  category.nomeCategoria
-                )}
-              </td>
-              <td>
-                <div className='button-container'>
+        <div className="category-details">
+          <table>
+            <thead>
+              <tr>
+                <th>Id da Categoria</th>
+                <th>Nome</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className='categoriesNames'>{category.IdCategoria}</td>
+                <td className='categoriesNames'>
                   {isEditing ? (
-                    <button className="save-button" onClick={handleUpdate}>Salvar</button>
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={handleInputChange}
+                    />
                   ) : (
-                    <button className="edit-button" onClick={() => setIsEditing(true)}>Editar</button>
+                    category.nomeCategoria
                   )}
-                  <button className="delete-button" onClick={handleConfirmDelete}>Excluir</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      {showConfirmationModal && (
-        <div className="background">
-          <div className='modalDelete'>
-            <h2>Tem certeza que deseja excluir esta categoria?</h2>
-            <div className='confirmDelete'>
-              <button onClick={handleDelete} className='yesbutton'>Sim</button>
-              <button onClick={handleCancelDelete} className='notbutton'>Cancelar</button>
+                </td>
+                <td>
+                  <div className='button-container'>
+                    {isEditing ? (
+                      <button className="save-button" onClick={handleUpdate}>Salvar</button>
+                    ) : (
+                      <button className="edit-button" onClick={() => setIsEditing(true)}>Editar</button>
+                    )}
+                    <button className="delete-button" onClick={handleConfirmDelete}>Excluir</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        {showConfirmationModal && (
+          <div className="background">
+            <div className='modalDelete'>
+              <h2>Tem certeza que deseja excluir esta categoria?</h2>
+              <div className='confirmDelete'>
+                <button onClick={handleDelete} className='yesbutton'>Sim</button>
+                <button onClick={handleCancelDelete} className='notbutton'>Cancelar</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 }

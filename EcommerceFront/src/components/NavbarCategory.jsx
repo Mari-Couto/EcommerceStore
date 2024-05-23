@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import './Navbar.css';
+import CategoryCard from './CategoryCard';
 
 const NavbarCategory = () => {
   const [message, setMessage] = useState('');
@@ -111,6 +112,20 @@ const NavbarCategory = () => {
       )}
 
       {message && <div className="search-message">{message}</div>}
+
+      {searchResult && (
+        <CategoryCard
+          category={searchResult}
+          onDelete={handleDelete}
+          isSearchResult={true} 
+        />
+      )}
+
+      <div className="category-list">
+        {categories.map(category => (
+          <CategoryCard key={category.IdCategoria} category={category} onDelete={handleDelete} />
+        ))}
+      </div>
     </div>
   );
 };
