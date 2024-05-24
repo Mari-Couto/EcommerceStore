@@ -1,13 +1,13 @@
 .catalog {
     display: flex;
     flex-wrap: wrap;
-    margin-top: 20px;
+    justify-content: space-between;
   }
   
   .card-product {
     border: 1px solid #ccc;
     border-radius: 8px;
-    margin: 10px;
+    margin: 30px;
     width: 300px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
@@ -54,7 +54,22 @@
   .buy-button:hover {
     background-color: #0056b3;
   }
-  
+
+  .order-status {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+ .success {
+  color: green;
+}
+
+ .error {
+  color: red;
+}
+
+
   .pagination {
     display: flex;
     justify-content: center;

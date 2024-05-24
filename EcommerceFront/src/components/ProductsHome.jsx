@@ -9,7 +9,7 @@ const ProductsHome = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPage] = useState(5); 
-  const [orderStatus, setOrderStatus] = useState(null);
+  const [orderStatuses, setOrderStatuses] = useState({}); 
 
   useEffect(() => {
     async function fetchProducts() {
@@ -39,11 +39,18 @@ const ProductsHome = () => {
   const handleBuyButtonClick = async (product) => {
     try {
       const response = await postOrder(product);
-      setOrderStatus(`Pedido inserido com sucesso! ID do Pedido: ${response.IdPedido}`);
+      setOrderStatuses(prevStatuses => ({
+        ...prevStatuses,
+        [product.idProduto]: { message: `Pedido inserido com sucesso! ID do Pedido: ${response.IdPedido}`, isSuccess: true }
+      }));
     } catch (error) {
-      setOrderStatus('Erro ao inserir pedido. Tente novamente.');
+      setOrderStatuses(prevStatuses => ({
+        ...prevStatuses,
+        [product.idProduto]: { message: 'Erro ao inserir pedido. Tente novamente.', isSuccess: false }
+      }));
     }
   };
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -61,31 +68,35 @@ const ProductsHome = () => {
   return (
     <div>
       <div className="catalog">
-      {currentProducts.map((product, index) => (
-        <div 
-          key={product.idProduto} 
-          className={`card-product ${index === currentProducts.length - 1 ? 'last-card' : ''}`}
-        >
-          <div className="image-container">
-            {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="image" />}
+        {currentProducts.map((product, index) => (
+          <div 
+            key={product.idProduto} 
+            className={`card-product ${index === currentProducts.length - 1 ? 'last-card' : ''}`}
+          >
+            <div className="image-container">
+              {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="image" />}
+            </div>
+            <div className="products">
+              <h3>{product.nome}</h3>
+              <p>Preço: R$ {product.precoProduto}</p>
+              <p>{product.descricao}</p>
+              <button className="buy-button" onClick={() => handleBuyButtonClick(product)}>Comprar</button>
+              {orderStatuses[product.idProduto] && (
+                <div className={`order-status ${orderStatuses[product.idProduto].isSuccess ? 'success' : 'error'}`}>
+                  {orderStatuses[product.idProduto].message}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="products">
-            <h3>{product.nome}</h3>
-            <p>Preço: R$ {product.precoProduto}</p>
-            <p>{product.descricao}</p>
-            <button className="buy-button" onClick={() => handleBuyButtonClick(product)}>Comprar</button>
-            {orderStatus && <div className="order-status">{orderStatus}</div>}
-          </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
       <div className="pagination">
-      {Array.from({ length: Math.ceil(products.length / productsPerPage) }).map((_, index) => (
-        <button key={index + 1} onClick={() => paginate(index + 1)} className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}>
-          {index + 1}
-        </button>
-      ))}
-    </div>
+        {Array.from({ length: Math.ceil(products.length / productsPerPage) }).map((_, index) => (
+          <button key={index + 1} onClick={() => paginate(index + 1)} className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}>
+            {index + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

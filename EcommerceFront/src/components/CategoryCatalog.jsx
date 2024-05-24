@@ -57,16 +57,16 @@ const CategoryCatalog = () => {
 
   return (
 <div>
-  <div className="category-list">
+<div className="category-list">
       {currentCategories.map(category => (
         <CategoryCard key={category.IdCategoria} category={category} />
       ))}
-      <Pagination
+    </div>
+    <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
-    </div>
 </div>
   );
 };
