@@ -61,8 +61,11 @@ const ProductsHome = () => {
   return (
     <div>
       <div className="catalog">
-      {currentProducts.map(product => (
-        <div key={product.idProduto} className="card-product">
+      {currentProducts.map((product, index) => (
+        <div 
+          key={product.idProduto} 
+          className={`card-product ${index === currentProducts.length - 1 ? 'last-card' : ''}`}
+        >
           <div className="image-container">
             {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="image" />}
           </div>

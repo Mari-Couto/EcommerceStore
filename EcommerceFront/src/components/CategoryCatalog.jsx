@@ -56,18 +56,18 @@ const CategoryCatalog = () => {
   const totalPages = Math.ceil(categories.length / categoriesPerPage);
 
   return (
-   <div>
-     <div className="category-list">
+<div>
+  <div className="category-list">
       {currentCategories.map(category => (
         <CategoryCard key={category.IdCategoria} category={category} />
       ))}
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
     </div>
-       <Pagination
-       totalPages={totalPages}
-       currentPage={currentPage}
-       onPageChange={setCurrentPage}
-     />
-   </div>
+</div>
   );
 };
 

@@ -75,8 +75,13 @@ const ProductCatalog = () => {
 
   return (
     <div className="product-catalog">
-      {currentProducts.map(product => (
-        <ProductCard key={product.idProduto} product={product} onDelete={handleDelete} />
+      {currentProducts.map((product, index) => (
+        <ProductCard 
+          key={product.idProduto} 
+          product={product} 
+          onDelete={handleDelete} 
+          isLast={index === currentProducts.length - 1} 
+        />
       ))}
       <Pagination
         totalPages={totalPages}
