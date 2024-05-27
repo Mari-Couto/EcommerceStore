@@ -3,11 +3,11 @@ import './ProductCard.css';
 import EditModal from './EditModal'; 
 import DeleteProduct from './DeleteProduct';
 
-const ProductCard = ({ product, onDelete, isLast }) => {
+const ProductCard = ({ product, onDelete }) => {
   const [openModal, setOpenModal] = React.useState(false);
 
   return (
-    <div className={`product-card ${isLast ? 'last-card' : ''}`}>
+    <div className={`product-card`}>
       <div className="product-image-container">
         {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="product-image" />}
       </div>

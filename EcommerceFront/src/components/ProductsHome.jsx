@@ -8,7 +8,7 @@ const ProductsHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(4); 
+  const [productsPerPageHome] = useState(8); 
   const [orderStatuses, setOrderStatuses] = useState({}); 
 
   useEffect(() => {
@@ -51,8 +51,8 @@ const ProductsHome = () => {
     }
   };
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const indexOfLastProduct = currentPage * productsPerPageHome;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPageHome;
   const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
 
   const paginate = pageNumber => setCurrentPage(pageNumber);
@@ -91,7 +91,7 @@ const ProductsHome = () => {
         ))}
       </div>
       <div className="pagination">
-        {Array.from({ length: Math.ceil(products.length / productsPerPage) }).map((_, index) => (
+        {Array.from({ length: Math.ceil(products.length / productsPerPageHome) }).map((_, index) => (
           <button key={index + 1} onClick={() => paginate(index + 1)} className={`page-link ${currentPage === index + 1 ? 'active' : ''}`}>
             {index + 1}
           </button>
