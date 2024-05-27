@@ -8,9 +8,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   height: 115px;
 }
-.product-card.last-card {
-   margin-bottom: 300px;
-}
 
 .product-image-container, .product-details {
   width: 130px;

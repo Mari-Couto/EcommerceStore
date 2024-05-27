@@ -8,7 +8,7 @@ const ProductsHome = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(5); 
+  const [productsPerPage] = useState(4); 
   const [orderStatuses, setOrderStatuses] = useState({}); 
 
   useEffect(() => {

@@ -73,7 +73,7 @@ const NavbarCategory = () => {
         <div className="navbar-links">
           <Link to="/">Início</Link>
           <Link to="/produtos">Produtos</Link>
-          <Link to="/Categoria">Categoria</Link>
+          <Link to="/Categorias">Categoria</Link>
           <Link to="/contato">Contato</Link>
         </div>
         <div className="navbar-search">
