@@ -1,0 +1,25 @@
+.containerCategoryHome {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .category-cardHome {
+    background-color: #deebff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: calc(33.333% - 32px); 
+  }
+  
+  .category-detailsHome {
+    text-align: center;
+  }
+  
+  .category-detailsHome h2 {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+  

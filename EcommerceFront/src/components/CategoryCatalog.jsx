@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CategoryCard from './CategoryCard';
-import CategoryHome from './CategoryHome';
 import './ProductCatalog.css';
 
 const Pagination = ({ totalPages, currentPage, onPageChange }) => {
@@ -61,11 +60,6 @@ const CategoryCatalog = () => {
 <div className="category-list">
       {currentCategories.map(category => (
         <CategoryCard key={category.IdCategoria} category={category} />
-      ))}
-    </div>
-    <div className="category-list">
-      {currentCategories.map(category => (
-        <CategoryHome key={category.IdCategoria} category={category} />
       ))}
     </div>
     <Pagination
