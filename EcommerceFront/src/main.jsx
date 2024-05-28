@@ -6,6 +6,7 @@ import Home from './routes/Home.jsx';
 import { createBrowserRouter, RouterProvider, Route } from 'react-router-dom';
 import Products from './routes/Products.jsx';
 import Category from './routes/Category.jsx';
+import CategoryClients from './routes/CategoryClients.jsx';
 
 const router = createBrowserRouter([
   {
@@ -21,8 +22,12 @@ const router = createBrowserRouter([
     element: <Products/>
   },
   {
-    path: "categorias",
+    path: "categoriasserviços",
     element: <Category/>
+  },
+  {
+    path: "categorias",
+    element: <CategoryClients/>
   }
 ]);
 
