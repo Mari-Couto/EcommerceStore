@@ -5,7 +5,6 @@ import { useState } from 'react';
 import './Navbar.css'; 
 import CarrinhoModal from './CarrinhoModal';
 import axios from 'axios';
-import OneProductsHome from './OneProductHome';
 
 const Navbar = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -13,16 +12,12 @@ const Navbar = () => {
   const [products, setProducts] = useState([]);
   const [showPostForm, setShowPostForm] = useState(false);
   
-  const handlePostButtonClick = () => {
-    setShowPostForm(!showPostForm); 
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await axios.get(`http://localhost:3000/produtos/busca/${searchQuery}`);
       setProducts(response.data);
-      setShowPostForm(true); // Mostrar os produtos encontrados
+      setShowPostForm(true); 
       console.log("Produtos encontrados:", response.data);
     } catch (error) {
       console.error("Erro ao buscar produtos:", error);
@@ -34,6 +29,7 @@ const Navbar = () => {
     setOpenModal(true); 
   };
 
+
   return (
     <div>
       <nav className="navbar">
@@ -44,9 +40,9 @@ const Navbar = () => {
         </div>
         <div className="navbar-links">
           <Link to="/">Início</Link>
-          <Link to="/produtos">Produtos</Link>
+          <Link to="/">Produtos</Link>
           <Link to="/sobre">Sobre</Link>
-          <Link to="/contato">Contato</Link>
+          <a href="#contact-section">Contato</a>
         </div>
         <div className="navbar-search">
           <form onSubmit={handleSubmit}>

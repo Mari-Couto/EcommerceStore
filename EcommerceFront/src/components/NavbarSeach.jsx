@@ -51,7 +51,7 @@ const NavbarSearch = () => {
           <Link to="/">Início</Link>
           <Link to="/produtos">Produtos</Link>
           <Link to="/Categorias">Categoria</Link>
-          <Link to="/contato">Contato</Link>
+          <a href="#contact-section">Contato</a>
         </div>
         <div className="navbar-search">
           <form onSubmit={handleSubmit}>
