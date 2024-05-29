@@ -50,6 +50,45 @@ router.get('/:IdCategoria', (req, res) => {
     }
 });
 
+router.get('/:IdCategoria/produtos', (req, res) => {
+    const IdCategoria = req.params.IdCategoria;
+    try {
+      mysql.query(
+        `SELECT 
+          p.IdProduto, 
+          p.nome, 
+          p.precoProduto,
+          p.descricao,  
+          p.quantidadeestoque,
+          p.file
+        FROM produtos as p
+        WHERE p.IdCategoria = ?`,
+        [IdCategoria],
+        (err, results) => {
+          if (err) {
+            throw err;
+          }
+          const produtos = results.map(item => {
+            const fileLink = item.file ? `/produtos/imagem/${item.IdProduto}` : null;
+            return {
+              IdProduto: item.IdProduto,
+              nome: item.nome,
+              precoProduto: item.precoProduto,
+              descricao: item.descricao,
+              quantidadeestoque: item.quantidadeestoque,
+              fileLink: fileLink
+            };
+          });
+          res.status(200).json(produtos);
+        }
+      );
+    } catch (error) {
+      console.error('Erro ao executar a consulta:', error);
+      res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+});
+
+
 //Envio da categoria 
 router.post('/', (req, res) => {
     const { nomeCategoria } = req.body;

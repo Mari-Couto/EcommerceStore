@@ -3,18 +3,22 @@ import axios from 'axios';
 import postOrder from './PostOrders';
 import './ProductsHome.css';
 
-const ProductsHome = () => {
+const ProductsHome = ({ IdCategoria }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPageHome] = useState(8); 
-  const [orderStatuses, setOrderStatuses] = useState({}); 
+  const [productsPerPageHome] = useState(8);
+  const [orderStatuses, setOrderStatuses] = useState({});
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await axios.get('http://localhost:3000/produtos');
+        let url = 'http://localhost:3000/produtos';
+        if (IdCategoria) {
+          url += `?IdCategoria=${IdCategoria}`;
+        }
+        const res = await axios.get(url);
         const productsWithImages = await Promise.all(res.data.map(async product => {
           let imageUrl = null;
           if (product.file) {
@@ -34,7 +38,7 @@ const ProductsHome = () => {
       }
     }
     fetchProducts();
-  }, []);
+  }, [IdCategoria]);
 
   const handleBuyButtonClick = async (product) => {
     try {
@@ -69,8 +73,8 @@ const ProductsHome = () => {
     <div>
       <div className="catalog">
         {currentProducts.map((product, index) => (
-          <div 
-            key={product.idProduto} 
+          <div
+            key={product.idProduto}
             className={`card-product ${index === currentProducts.length - 1 ? 'last-card' : ''}`}
           >
             <div className="image-container">

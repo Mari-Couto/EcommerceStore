@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import './Navbar.css'; 
+import OneProductsHome from './OneProductHome';
 import CarrinhoModal from './CarrinhoModal';
 import axios from 'axios';
 
@@ -40,7 +41,7 @@ const Navbar = () => {
         </div>
         <div className="navbar-links">
           <Link to="/">Início</Link>
-          <Link to="/">Produtos</Link>
+          <Link to="/Categorias">Categorias</Link>
           <Link to="/sobre">Sobre</Link>
           <a href="#contact-section">Contato</a>
         </div>
