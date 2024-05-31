@@ -73,7 +73,7 @@ const NavbarCategory = () => {
         <div className="navbar-links">
           <Link to="/">Início</Link>
           <Link to="/produtos">Produtos</Link>
-          <Link to="/Categorias">Categoria</Link>
+          <Link to="/categoriasserviços">Categoria</Link>
           <a href="#contact-section">Contato</a>
         </div>
         <div className="navbar-search">

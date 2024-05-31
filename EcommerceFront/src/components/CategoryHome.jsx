@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import OneProductHome from './OneProductHome';
+import OneProductsCategory from './OneProductCategory';
 import './CategoryHome.css';
 
 const CategoryHome = () => {
@@ -49,9 +49,9 @@ const CategoryHome = () => {
   return (
     <div className="containerCategoryHome">
       {categories.map(category => (
-        <div 
-          className={`category-cardHome ${selectedCategory === category.IdCategoria ? 'active' : ''}`} 
-          key={category.IdCategoria} 
+        <div
+          className={`category-cardHome ${selectedCategory === category.IdCategoria ? 'active' : ''}`}
+          key={category.IdCategoria}
           onClick={() => handleCategoryClick(category.IdCategoria)}
         >
           <div className="category-detailsHome">
@@ -63,7 +63,7 @@ const CategoryHome = () => {
       {selectedCategoryData && (
         <div className="products-container">
           <h3>Produtos da Categoria {selectedCategoryData.nomeCategoria}</h3>
-          <OneProductHome products={categoryProducts} />
+          <OneProductsCategory products={categoryProducts} />
         </div>
       )}
     </div>

@@ -96,13 +96,26 @@ router.get('/:IdPedidoItem', (req, res) => {
 });
 
 
-
-//Inserir item do pedido
+// Inserir item do pedido
 router.post('/', (req, res) => {
     const { IdPedido, IdProduto, Quantidade, Preco } = req.body;
+    console.log('Dados recebidos para inserir item do pedido:', req.body);
 
-    if (!IdPedido || !IdProduto || !Quantidade || !Preco) {
-        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    if (!IdPedido) {
+        console.error('IdPedido ausente');
+        return res.status(400).json({ error: 'O campo IdPedido é obrigatório' });
+    }
+    if (!IdProduto) {
+        console.error('IdProduto ausente');
+        return res.status(400).json({ error: 'O campo IdProduto é obrigatório' });
+    }
+    if (!Quantidade) {
+        console.error('Quantidade ausente');
+        return res.status(400).json({ error: 'O campo Quantidade é obrigatório' });
+    }
+    if (!Preco) {
+        console.error('Preco ausente');
+        return res.status(400).json({ error: 'O campo Preco é obrigatório' });
     }
 
     try {
@@ -111,9 +124,10 @@ router.post('/', (req, res) => {
             [IdPedido, IdProduto, Quantidade, Preco],
             (err, result) => {
                 if (err) {
-                    console.error('Erro ao inserir item de pedido:', err);
+                    console.error('Erro ao inserir item de pedido no banco de dados:', err);
                     return res.status(500).json({ error: 'Erro ao inserir item de pedido' });
                 }
+                console.log('Item de pedido inserido com sucesso:', result);
                 res.status(201).json({ message: 'Item de pedido inserido com sucesso', IdPedidoItem: result.insertId });
             }
         );
@@ -122,35 +136,6 @@ router.post('/', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
-
-  
-//alterar item de pedido
-router.patch('/:IdPedidoItem', (req, res) => {
-    const IdPedidoItem = req.params.IdPedidoItem;
-    const { Quantidade } = req.body;
-
-    try {
-        mysql.query(
-            'UPDATE pedidosItens SET Quantidade = ? WHERE IdPedidoItem = ?',
-            [Quantidade, IdPedidoItem],
-            (err, result) => {
-                if (err) {
-                    console.error('Erro ao atualizar a quantidade do item de pedido:', err);
-                    return res.status(500).json({ error: 'Erro ao atualizar a quantidade do item de pedido' });
-                }
-                if (result.affectedRows === 0) {
-                    return res.status(404).json({ error: 'Item de pedido não encontrado' });
-                }
-                res.status(200).json({ message: 'Quantidade do item de pedido atualizada com sucesso' });
-            }
-        );
-    } catch (error) {
-        console.error('Erro ao processar a requisição:', error);
-        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
-    }
-});
-
-
 
 //deletar item de pedido
 router.delete('/:IdPedidoItem', (req, res) => {
