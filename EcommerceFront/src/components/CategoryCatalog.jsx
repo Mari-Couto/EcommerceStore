@@ -24,7 +24,7 @@ const CategoryCatalog = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const categoriesPerPage = 5;
+  const categoriesPerPage = 8;
 
   useEffect(() => {
     const fetchCategories = async () => {

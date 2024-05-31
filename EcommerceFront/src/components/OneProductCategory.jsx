@@ -1,9 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios'; 
 import './ProductsHome.css';
 
 const OneProductsCategory = ({ products }) => {
-  const [orderStatus, setOrderStatus] = useState(null);
+  const [productsWithImages, setProductsWithImages] = useState([]);
+  const [orderStatuses, setOrderStatuses] = useState({});
+
+  useEffect(() => {
+    async function fetchProductsWithImages() {
+      try {
+        const updatedProducts = products.map(product => {
+          let imageUrl = product.fileLink ? `http://localhost:3000${product.fileLink}` : null;
+          return {
+            ...product,
+            imageUrl: imageUrl
+          };
+        });
+        setProductsWithImages(updatedProducts);
+      } catch (error) {
+        console.error('Erro ao buscar imagens dos produtos:', error);
+      }
+    }
+
+    fetchProductsWithImages();
+  }, [products]);
 
   const handleBuyButtonClick = async (product) => {
     try {
@@ -24,25 +44,48 @@ const OneProductsCategory = ({ products }) => {
 
       await axios.post('http://localhost:3000/pedidosItens', itemPayload);
 
-      setOrderStatus(`Pedido inserido com sucesso! ID do Pedido: ${orderResponse.data.IdPedido}`);
+      setOrderStatuses(prevStatuses => ({
+        ...prevStatuses,
+        [product.IdProduto]: { message: `Pedido inserido com sucesso! ID do Pedido: ${orderResponse.data.IdPedido}`, isSuccess: true }
+      }));
     } catch (error) {
-      setOrderStatus('Erro ao inserir pedido. Tente novamente.');
+      setOrderStatuses(prevStatuses => ({
+        ...prevStatuses,
+        [product.IdProduto]: { message: 'Erro ao inserir pedido. Tente novamente.', isSuccess: false }
+      }));
     }
   };
 
   return (
     <div className="catalog">
-      {products.map(product => (
+      {productsWithImages.map(product => (
         <div key={product.IdProduto} className="card-product">
           <div className="image-container">
-            {product.file && <img src={`http://localhost:3000/produtos/imagem/${product.IdProduto}`} alt={product.nome} className="image" />}
+            {product.imageUrl ? (
+              <img 
+                src={product.imageUrl} 
+                alt={product.nome} 
+                className="image" 
+                onError={(e) => {
+                  console.error('Erro ao carregar a imagem:', e.target.src);
+                  e.target.onerror = null; 
+                  e.target.src = 'fallback-image-url'; 
+                }} 
+              />
+            ) : (
+              <p>Imagem não disponível</p>
+            )}
           </div>
           <div className="products">
             <h3>{product.nome}</h3>
             <p>Preço: R$ {product.precoProduto}</p>
             <p>{product.descricao}</p>
             <button className="buy-button" onClick={() => handleBuyButtonClick(product)}>Comprar</button>
-            {orderStatus && <div className="order-status">{orderStatus}</div>}
+            {orderStatuses[product.IdProduto] && (
+              <div className={`order-status ${orderStatuses[product.IdProduto].isSuccess ? 'success' : 'error'}`}>
+                {orderStatuses[product.IdProduto].message}
+              </div>
+            )}
           </div>
         </div>
       ))}
