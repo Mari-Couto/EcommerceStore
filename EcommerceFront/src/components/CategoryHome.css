@@ -1,10 +1,14 @@
+.containerPag{
+  min-height: 500px;
+}
+
 .containerCategoryHome {
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
     padding: 16px;
   }
-  
+
   .category-cardHome {
     background-color: #deebff;
     border: 1px solid #ddd;

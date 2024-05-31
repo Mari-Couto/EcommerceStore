@@ -47,7 +47,8 @@ const CategoryHome = () => {
   const selectedCategoryData = categories.find(category => category.IdCategoria === selectedCategory);
 
   return (
-    <div className="containerCategoryHome">
+   <div className='containerPag'>
+     <div className="containerCategoryHome">
       {categories.map(category => (
         <div
           className={`category-cardHome ${selectedCategory === category.IdCategoria ? 'active' : ''}`}
@@ -67,6 +68,7 @@ const CategoryHome = () => {
         </div>
       )}
     </div>
+   </div>
   );
 }
 
