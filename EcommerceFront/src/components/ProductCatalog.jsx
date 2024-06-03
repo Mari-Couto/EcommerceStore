@@ -46,10 +46,10 @@ const ProductCatalog = () => {
           }
         }));
         setProducts(productsWithImages);
-        setLoading(false); 
       } catch (error) {
         console.error('Erro ao obter os produtos:', error);
         setError(error); 
+      } finally {
         setLoading(false); 
       }
     }
@@ -60,6 +60,11 @@ const ProductCatalog = () => {
     setProducts(prevProducts => prevProducts.filter(product => product.idProduto !== productId));
   };
 
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(products.length / productsPerPage);
+
   if (loading) {
     return <div>Carregando...</div>;
   }
@@ -68,28 +73,21 @@ const ProductCatalog = () => {
     return <div>Erro: {error.message}</div>;
   }
 
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
-  const totalPages = Math.ceil(products.length / productsPerPage);
-
   return (
     <div className="product-catalog">
-    {currentProducts.map((product, index) => (
-      <div key={product.idProduto}>
+      {currentProducts.map((product) => (
         <ProductCard 
+          key={product.idProduto}
           product={product} 
-          onDelete={handleDelete} 
-          isLast={index === currentProducts.length - 1} 
+          onDelete={handleDelete}
         />
-      </div>
-    ))}
-    <Pagination
-      totalPages={totalPages}
-      currentPage={currentPage}
-      onPageChange={setCurrentPage}
-    />
-  </div>
+      ))}
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+      />
+    </div>
   );
 };
 

@@ -120,12 +120,6 @@ const NavbarCategory = () => {
           isSearchResult={true} 
         />
       )}
-
-      <div className="category-list">
-        {categories.map(category => (
-          <CategoryCard key={category.IdCategoria} category={category} onDelete={handleDelete} />
-        ))}
-      </div>
     </div>
   );
 };

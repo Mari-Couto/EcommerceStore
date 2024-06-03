@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './ProductCard.css';
 import EditModal from './EditModal'; 
 import DeleteProduct from './DeleteProduct';
 
 const ProductCard = ({ product, onDelete }) => {
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   return (
-    <div className={`product-card`}>
+    <div className="product-card">
       <div className="product-image-container">
         {product.imageUrl && <img src={product.imageUrl} alt={product.nome} className="product-image" />}
       </div>
@@ -33,9 +33,9 @@ const ProductCard = ({ product, onDelete }) => {
               <td>{product.quantidadeestoque}</td>
               <td>{product.IdCategoria}</td>
               <td>
-                <div className='button-container'>
+                <div className="button-container">
                   <button className="edit-button" onClick={() => setOpenModal(true)}>Editar</button>
-                  <EditModal  productId={product.idProduto} isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
+                  <EditModal productId={product.idProduto} isOpen={openModal} onClose={() => setOpenModal(false)} product={product} />
                   <DeleteProduct productId={product.idProduto} onDelete={onDelete} />
                 </div>
               </td>
