@@ -23,7 +23,7 @@ const CategoryCard = ({ category, onDelete, isSearchResult }) => {
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:3000/categoria/${category.IdCategoria}`);
-      onDelete(category.IdCategoria);
+      onDelete(category.IdCategoria); 
     } catch (error) {
       console.error('Erro ao excluir a categoria:', error);
     }

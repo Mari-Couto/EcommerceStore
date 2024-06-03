@@ -42,6 +42,10 @@ const CategoryCatalog = () => {
     fetchCategories();
   }, []);
 
+  const handleDelete = (categoryId) => {
+    setCategories(prevCategories => prevCategories.filter(category => category.IdCategoria !== categoryId));
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -56,18 +60,22 @@ const CategoryCatalog = () => {
   const totalPages = Math.ceil(categories.length / categoriesPerPage);
 
   return (
-<div>
-<div className="category-list">
-      {currentCategories.map(category => (
-        <CategoryCard key={category.IdCategoria} category={category} />
-      ))}
-    </div>
-    <Pagination
+    <div>
+      <div className="category-list">
+        {currentCategories.map(category => (
+          <CategoryCard 
+            key={category.IdCategoria} 
+            category={category} 
+            onDelete={handleDelete} 
+          />
+        ))}
+      </div>
+      <Pagination
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
-</div>
+    </div>
   );
 };
 
