@@ -27,8 +27,9 @@ const Navbar = () => {
 
   const handleCartClick = (event) => {
     event.preventDefault(); 
-    setOpenModal(true); 
+    setOpenModal((prevOpenModal) => !prevOpenModal); 
   };
+  
 
 
   return (

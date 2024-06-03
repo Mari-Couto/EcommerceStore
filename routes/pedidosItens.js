@@ -137,6 +137,32 @@ router.post('/', (req, res) => {
     }
 });
 
+//alterar item de pedido
+router.patch('/:IdPedidoItem', (req, res) => {
+    const IdPedidoItem = req.params.IdPedidoItem;
+    const { Quantidade } = req.body;
+    try {
+        mysql.query(
+            'UPDATE pedidosItens SET Quantidade = ? WHERE IdPedidoItem = ?',
+            [Quantidade, IdPedidoItem],
+            (err, result) => {
+                if (err) {
+                    console.error('Erro ao atualizar item de pedido:', err);
+                    return res.status(500).json({ error: 'Erro ao atualizar item de pedido' });
+                }
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ error: 'Item de pedido não encontrado' });
+                }
+                res.status(200).json({ message: 'Item de pedido atualizado com sucesso' });
+            }
+        );
+    } catch (error) {
+        console.error('Erro ao processar a requisição:', error);
+        res.status(500).json({ error: 'Erro interno ao processar a requisição' });
+    }
+});
+
+
 //deletar item de pedido
 router.delete('/:IdPedidoItem', (req, res) => {
     const IdPedidoItem = req.params.IdPedidoItem;

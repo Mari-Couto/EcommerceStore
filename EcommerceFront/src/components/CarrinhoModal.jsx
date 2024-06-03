@@ -40,49 +40,43 @@ const CarrinhoModal = ({ onClose }) => {
     fetchOrderDetails();
   }, []);
 
-  const handleIncrement = async (itemId) => {
+  const updateItemQuantity = async (itemId, newQuantity) => {
     try {
-      const updatedOrders = orders.map(order => ({
-        ...order,
-        items: order.items.map(item => {
-          if (item.IdPedidoItem === itemId) {
-            const newQuantity = item.Quantidade + 1;
-
-            axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
-
-            return { ...item, Quantidade: newQuantity };
-          }
-          return item;
-        })
-      }));
-
-      setOrders(updatedOrders);
+      const response = await axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
+      if (response.status === 200) {
+        setOrders(prevOrders => 
+          prevOrders.map(order => ({
+            ...order,
+            items: order.items.map(item => 
+              item.IdPedidoItem === itemId ? { ...item, Quantidade: newQuantity } : item
+            )
+          }))
+        );
+      } else {
+        console.error('Erro ao atualizar a quantidade do item de pedido:', response.data.error);
+      }
     } catch (error) {
       console.error('Erro ao atualizar a quantidade do item de pedido:', error);
     }
   };
 
-  const handleDecrement = async (itemId) => {
-    try {
-      const updatedOrders = orders.map(order => ({
-        ...order,
-        items: order.items.map(item => {
-          if (item.IdPedidoItem === itemId) {
-            const newQuantity = item.Quantidade - 1;
+  const handleIncrement = (itemId) => {
+    const order = orders.find(order => order.items.some(item => item.IdPedidoItem === itemId));
+    const item = order.items.find(item => item.IdPedidoItem === itemId);
+    const newQuantity = item.Quantidade + 1;
+    updateItemQuantity(itemId, newQuantity);
+  };
 
-            if (newQuantity >= 1) {
-              axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
-              
-              return { ...item, Quantidade: newQuantity };
-            }
-          }
-          return item;
-        })
-      }));
+  const handleDecrement = (itemId) => {
+    const order = orders.find(order => order.items.some(item => item.IdPedidoItem === itemId));
+    const item = order.items.find(item => item.IdPedidoItem === itemId);
+    const newQuantity = item.Quantidade - 1;
 
-      setOrders(updatedOrders);
-    } catch (error) {
-      console.error('Erro ao atualizar a quantidade do item de pedido:', error);
+    if (newQuantity >= 1) {
+      updateItemQuantity(itemId, newQuantity);
+    } else if (newQuantity === 0) {
+      setShowConfirmationModal(true);
+      setOrderIdToDelete(order.IdPedido);
     }
   };
 
@@ -94,7 +88,6 @@ const CarrinhoModal = ({ onClose }) => {
   const handleConfirmDelete = async () => {
     try {
       const response = await axios.delete(`http://localhost:3000/pedidos/${orderIdToDelete}`);
-
       if (response.status === 202) {
         setOrders(orders.filter(order => order.IdPedido !== orderIdToDelete));
       } else {
