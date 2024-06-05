@@ -1,40 +1,43 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
-import './Navbar.css'; 
 import OneProductsHome from './OneProductHome';
+import ProductsHome from './ProductsHome';
 import CarrinhoModal from './CarrinhoModal';
 import axios from 'axios';
+import './Navbar.css'; 
 
 const Navbar = () => {
   const [openModal, setOpenModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
-  const [showPostForm, setShowPostForm] = useState(false);
+  const [showOneProduct, setShowOneProduct] = useState(false);
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("Search query submitted:", searchQuery);
     if (searchQuery.trim() === '') {
-      setProducts([]);
-      setShowPostForm(false);
-      setMessage('');  
+      setMessage('Por favor, insira um termo de pesquisa.');
+      setShowOneProduct(false);
       return;
     }
     try {
       const response = await axios.get(`http://localhost:3000/produtos/busca/${searchQuery}`);
+      console.log("Response from server:", response.data);
       if (response.data.length === 0) {
         setMessage('Produto não encontrado');
-        setProducts([]);
-        setShowPostForm(false);
+        setShowOneProduct(false);
       } else {
         setProducts(response.data);
-        setShowPostForm(true);
+        setShowOneProduct(true);
         setMessage('');
       }
     } catch (error) {
-      setMessage('Produto não encontrado');
+      console.error("Error fetching product:", error);
+      setMessage('Erro ao buscar o produto');
+      setShowOneProduct(false);
     }
     setSearchQuery('');
   };
@@ -43,6 +46,9 @@ const Navbar = () => {
     event.preventDefault(); 
     setOpenModal((prevOpenModal) => !prevOpenModal); 
   };
+
+  console.log("showOneProduct:", showOneProduct);
+  console.log("products:", products);
 
   return (
     <div>
@@ -85,7 +91,11 @@ const Navbar = () => {
 
       {message && <div className="messageProduto">{message}</div>}
 
-      {showPostForm && <OneProductsHome products={products} onClose={() => setShowPostForm(false)} />}
+      {showOneProduct ? (
+        <OneProductsHome products={products} onClose={() => setShowOneProduct(false)} />
+      ) : (
+        <ProductsHome />
+      )}
     </div>
   );
 }
