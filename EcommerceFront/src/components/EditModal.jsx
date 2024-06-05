@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './EditModal.css';
+
+const categoriasUrl = 'http://localhost:3000/categoria'; 
 
 const EditModal = ({ isOpen, onClose, productId }) => {
     const [productNome, setProductNome] = useState('');
@@ -12,7 +14,20 @@ const EditModal = ({ isOpen, onClose, productId }) => {
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
     const [fileName, setFileName] = useState('');
+    const [categorias, setCategorias] = useState([]);
 
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const response = await axios.get(categoriasUrl);
+                setCategorias(response.data); 
+            } catch (error) {
+                console.error('Erro ao obter categorias:', error);
+            }
+        };
+
+        fetchCategorias(); 
+    }, []); 
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -90,32 +105,39 @@ const EditModal = ({ isOpen, onClose, productId }) => {
                         <form onSubmit={handleEdit}>
                             <div className="form">
                                 <div>
-                                <label>Novo Nome:</label>
-                                <input type="text" name="productNome" value={productNome} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label>Nova Descrição:</label>
-                                <textarea name="productDescricao" value={productDescricao} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label>Novo Preço:</label>
-                                <input type="number" name="productPreco" value={productPreco} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label>Novo estoque:</label>
-                                <input type="number" name="productQuantidade" value={productQuantidade} onChange={handleChange} />
-                            </div>
-                            <div>
-                                <label>Nova Categoria por ID:</label>
-                                <input type="number" name="productIdCategoria" value={productIdCategoria} onChange={handleChange} />
-                            </div>
-                            <div>
-                            <label className="file-labelEdit">
-                             Selecione a imagem:
-                             <input type="file" name="file" className="file-inputEdit" onChange={handleChange} />
-                            </label>
-                           {fileName && <p className='messageFile'>Arquivo selecionado: {fileName}</p>}
-                            </div>
+                                    <label>Novo Nome:</label>
+                                    <input type="text" name="productNome" value={productNome} onChange={handleChange} />
+                                </div>
+                                <div>
+                                    <label>Nova Descrição:</label>
+                                    <textarea name="productDescricao" value={productDescricao} onChange={handleChange} />
+                                </div>
+                                <div>
+                                    <label>Novo Preço:</label>
+                                    <input type="number" name="productPreco" value={productPreco} onChange={handleChange} />
+                                </div>
+                                <div>
+                                    <label>Novo estoque:</label>
+                                    <input type="number" name="productQuantidade" value={productQuantidade} onChange={handleChange} />
+                                </div>
+                                <div>
+                                    <label>Nova Categoria por ID:</label>
+                                    <select name="productIdCategoria" value={productIdCategoria} onChange={handleChange} required>
+                                        <option value="">Selecione uma categoria</option>
+                                        {categorias.map((categoria) => (
+                                            <option key={categoria.IdCategoria} value={categoria.IdCategoria}>
+                                                {categoria.nomeCategoria}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="file-labelEdit">
+                                        Selecione a imagem:
+                                        <input type="file" name="file" className="file-inputEdit" onChange={handleChange} />
+                                    </label>
+                                    {fileName && <p className='messageFile'>Arquivo selecionado: {fileName}</p>}
+                                </div>
                             </div>
                             <button type="submit" className='submit'>Atualizar Produto</button>
                         </form>

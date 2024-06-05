@@ -8,6 +8,12 @@
   .post-product-form h2 {
     margin-bottom: 20px;
   }
+ 
+  .categoria-select {
+  padding: 8px;
+  font-size: 13px;
+  margin: 5px;
+  }
   
   .message{
     font-size: 20px;

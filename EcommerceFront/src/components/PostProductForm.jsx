@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './PostProductForm.css';
 
 const url = 'http://localhost:3000/produtos';
+const categoriasUrl = 'http://localhost:3000/categoria'; 
 
 const PostProductForm = ({ onClose }) => {
   const [productData, setProductData] = useState({
@@ -14,8 +15,22 @@ const PostProductForm = ({ onClose }) => {
     file: null,
   });
 
+  const [categorias, setCategorias] = useState([]);
   const [message, setMessage] = useState('');
   const [fileName, setFileName] = useState('');
+
+  useEffect(() => {
+    const fetchCategorias = async () => {
+      try {
+        const response = await axios.get(categoriasUrl);
+        setCategorias(response.data); 
+      } catch (error) {
+        console.error('Erro ao obter categorias:', error);
+      }
+    };
+
+    fetchCategorias(); 
+  }, []); 
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -46,10 +61,10 @@ const PostProductForm = ({ onClose }) => {
       formData.append('IdCategoria', productData.IdCategoria);
       formData.append('file', productData.file);
 
-      await axios.post(url, formData, { 
+      await axios.post(url, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       setMessage('Produto inserido com sucesso.');
@@ -84,7 +99,14 @@ const PostProductForm = ({ onClose }) => {
         </label>
         <label>
           Categoria:
-          <input type="text" name="IdCategoria" value={productData.IdCategoria} onChange={handleChange} required />
+          <select name="IdCategoria" value={productData.IdCategoria} onChange={handleChange} required className="categoria-select">
+                <option value="">Selecione uma categoria</option>
+                {categorias.map((categoria) => (
+                 <option key={categoria.IdCategoria} value={categoria.IdCategoria}>
+                {categoria.nomeCategoria}
+               </option>
+                ))}
+              </select>
         </label>
         <label className="file-label">
           Selecione a imagem:
