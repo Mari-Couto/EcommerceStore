@@ -19,9 +19,11 @@ const NavbarCategory = () => {
       const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
       setSearchResult(response.data);
       setMessage('');
+      setSearchId(''); 
     } catch (error) {
       setSearchResult(null);
       setMessage('Categoria não encontrada.');
+      setSearchId('');
     }
   };
 
@@ -31,6 +33,11 @@ const NavbarCategory = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setMessage('');
+    if (searchId.trim() === '') {
+      setSearchResult(null);
+      return;
+    }
     fetchData();
   };
 
@@ -111,7 +118,7 @@ const NavbarCategory = () => {
         </div>
       )}
 
-      {message && <div className="search-message">{message}</div>}
+      {message && <div className="messageProduto">{message}</div>}
 
       {searchResult && (
         <CategoryCard

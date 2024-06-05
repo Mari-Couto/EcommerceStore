@@ -13,12 +13,7 @@ const NavbarSearch = () => {
   const [message, setMessage] = useState('');
   const [showPostForm, setShowPostForm] = useState(false);
 
-  const handleSearchChange = (event) => {
-    setIdProduct(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const fetchData = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/produtos/${IdProduct}`);
       const productData = response.data;
@@ -33,6 +28,21 @@ const NavbarSearch = () => {
       setMessage(`Produto com ID #${IdProduct} não encontrado`);
       setProduct(null);
     }
+  };
+
+  const handleSearchChange = (event) => {
+    setIdProduct(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setMessage('');
+    if (IdProduct.trim() === '') {
+      setProduct(null);
+      return;
+    }
+    fetchData();
+    setIdProduct(''); // Limpar a barra de pesquisa após a busca
   };
 
   const handlePostButtonClick = () => {

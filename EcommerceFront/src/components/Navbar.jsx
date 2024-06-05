@@ -12,25 +12,37 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState([]);
   const [showPostForm, setShowPostForm] = useState(false);
-  
+  const [message, setMessage] = useState('');
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (searchQuery.trim() === '') {
+      setProducts([]);
+      setShowPostForm(false);
+      setMessage('');  
+      return;
+    }
     try {
       const response = await axios.get(`http://localhost:3000/produtos/busca/${searchQuery}`);
-      setProducts(response.data);
-      setShowPostForm(true); 
-      console.log("Produtos encontrados:", response.data);
+      if (response.data.length === 0) {
+        setMessage('Produto não encontrado');
+        setProducts([]);
+        setShowPostForm(false);
+      } else {
+        setProducts(response.data);
+        setShowPostForm(true);
+        setMessage('');
+      }
     } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
+      setMessage('Produto não encontrado');
     }
+    setSearchQuery('');
   };
 
   const handleCartClick = (event) => {
     event.preventDefault(); 
     setOpenModal((prevOpenModal) => !prevOpenModal); 
   };
-  
-
 
   return (
     <div>
@@ -70,7 +82,9 @@ const Navbar = () => {
 
         {openModal && <CarrinhoModal onClose={() => setOpenModal(false)} />}
       </nav>
-    
+
+      {message && <div className="messageProduto">{message}</div>}
+
       {showPostForm && <OneProductsHome products={products} onClose={() => setShowPostForm(false)} />}
     </div>
   );
