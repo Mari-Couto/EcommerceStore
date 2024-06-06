@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     element: <Category/>
   },
   {
-    path: "categorias",
+    path: "categorias/:IdCategoria/produtos",
     element: <CategoryClients/>
   }
 ]);
