@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios'; 
-import './ProductsHome.css';
+import './OneProductsHome.css';
 
 const OneProductsHome = ({ products }) => {
     const [orderStatus, setOrderStatus] = useState(null); 
@@ -29,10 +29,10 @@ const OneProductsHome = ({ products }) => {
       };
 
   return (
-    <div className="catalog">
+    <div className="catalogOne">
       {products.map(product => (
-        <div key={product.idProduto} className="card-product">
-        <div className="image-container">
+        <div key={product.idProduto} className="card-productOne">
+          <div className="image-container">
             {product.file && <img src={`http://localhost:3000/produtos/imagem/${product.idProduto}`} alt={product.nome} className="image" />}
           </div>
           <div className="products">
@@ -40,14 +40,12 @@ const OneProductsHome = ({ products }) => {
             <p>Preço: R$ {product.precoProduto}</p>
             <p>{product.descricao}</p>
             <button className="buy-button" onClick={() => handleBuyButtonClick(product)}>Comprar</button>
-               {orderStatus && <div className="order-status">{orderStatus}</div>}
+            {orderStatus && <div className="order-status">{orderStatus}</div>}
           </div>
         </div>
       ))}
     </div>
   );
-
 } 
-
 
 export default OneProductsHome;

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import './Navbar.css'; 
@@ -53,10 +54,15 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="navbar-links">
-          <Link to="/">Início</Link>
-          <Link to="/Categorias">Categorias</Link>
-          <Link to="/sobre">Sobre</Link>
-          <a href="#contact-section">Contato</a>
+       <p>Nos sigam em todas as redes sociais <a href="https://www.facebook.com/shopease" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faFacebook} className="fa-icon" />
+            </a>
+          <a href="https://www.instagram.com/shopease" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faInstagram} className="fa-icon" />
+            </a>
+          <a href="https://www.twitter.com/shopease" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faTwitter} className="fa-icon" /> 
+            </a></p>
         </div>
         <div className="navbar-search">
           <form onSubmit={handleSubmit}>

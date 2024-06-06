@@ -1,4 +1,3 @@
-import CategoryHome from '../components/CategoryHome'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import React, { useEffect, useState } from 'react';
@@ -30,7 +29,6 @@ const CategoryClients = () => {
     <div>
       
       <Navbar/>
-      <h2>Produtos da Categoria {IdCategoria}</h2>
       {loading ? (
         <p>Carregando...</p>
       ) : (
