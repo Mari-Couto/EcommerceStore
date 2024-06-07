@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import axios from 'axios'; 
-import './OneProductsHome.css';
 
 const OneProductsHome = ({ products }) => {
     const [orderStatus, setOrderStatus] = useState(null); 
@@ -29,9 +28,9 @@ const OneProductsHome = ({ products }) => {
       };
 
   return (
-    <div className="catalogOne">
+    <div className="catalog">
       {products.map(product => (
-        <div key={product.idProduto} className="card-productOne">
+        <div key={product.idProduto} className="card-product">
           <div className="image-container">
             {product.file && <img src={`http://localhost:3000/produtos/imagem/${product.idProduto}`} alt={product.nome} className="image" />}
           </div>
