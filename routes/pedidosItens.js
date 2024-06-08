@@ -97,38 +97,40 @@ router.get('/:IdPedidoItem', (req, res) => {
 
 
 // Inserir item do pedido
-router.post('/', (req, res) => {
-    const { IdPedido, IdProduto, Quantidade, Preco } = req.body;
-    console.log('Dados recebidos para inserir item do pedido:', req.body);
+router.post('/:IdPedido', (req, res) => {
+    const IdPedido = req.params.IdPedido;
+    const { IdProduto, Quantidade, Preco } = req.body;
 
-    if (!IdPedido) {
-        console.error('IdPedido ausente');
-        return res.status(400).json({ error: 'O campo IdPedido é obrigatório' });
-    }
-    if (!IdProduto) {
-        console.error('IdProduto ausente');
-        return res.status(400).json({ error: 'O campo IdProduto é obrigatório' });
-    }
-    if (!Quantidade) {
-        console.error('Quantidade ausente');
-        return res.status(400).json({ error: 'O campo Quantidade é obrigatório' });
-    }
-    if (!Preco) {
-        console.error('Preco ausente');
-        return res.status(400).json({ error: 'O campo Preco é obrigatório' });
+    if (!IdProduto || !Quantidade || !Preco) {
+        console.error('Campos obrigatórios ausentes');
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
     try {
         mysql.query(
-            'INSERT INTO pedidosItens (IdPedido, IdProduto, Quantidade, Preco) VALUES (?, ?, ?, ?)',
-            [IdPedido, IdProduto, Quantidade, Preco],
-            (err, result) => {
+            'SELECT * FROM pedidos WHERE IdPedido = ?',
+            [IdPedido],
+            (err, results) => {
                 if (err) {
-                    console.error('Erro ao inserir item de pedido no banco de dados:', err);
-                    return res.status(500).json({ error: 'Erro ao inserir item de pedido' });
+                    console.error('Erro ao verificar a existência do pedido:', err);
+                    return res.status(500).json({ error: 'Erro interno ao verificar a existência do pedido' });
                 }
-                console.log('Item de pedido inserido com sucesso:', result);
-                res.status(201).json({ message: 'Item de pedido inserido com sucesso', IdPedidoItem: result.insertId });
+                if (results.length === 0) {
+                    return res.status(404).json({ error: `Pedido com o ID #${IdPedido} não encontrado` });
+                }
+
+                mysql.query(
+                    'INSERT INTO pedidosItens (IdPedido, IdProduto, Quantidade, Preco) VALUES (?, ?, ?, ?)',
+                    [IdPedido, IdProduto, Quantidade, Preco],
+                    (err, result) => {
+                        if (err) {
+                            console.error('Erro ao inserir item de pedido no banco de dados:', err);
+                            return res.status(500).json({ error: 'Erro ao inserir item de pedido' });
+                        }
+                        console.log('Item de pedido inserido com sucesso:', result);
+                        res.status(201).json({ message: 'Item de pedido inserido com sucesso', IdPedidoItem: result.insertId });
+                    }
+                );
             }
         );
     } catch (error) {
@@ -136,6 +138,8 @@ router.post('/', (req, res) => {
         res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
+
+
 
 //alterar item de pedido
 router.patch('/:IdPedidoItem', (req, res) => {

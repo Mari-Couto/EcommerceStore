@@ -5,105 +5,86 @@ import './CarrinhoModal.css';
 const CarrinhoModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [orders, setOrders] = useState([]);
+  const [order, setOrder] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const [orderIdToDelete, setOrderIdToDelete] = useState(null);
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
-      setLoading(true);
-      try {
-        const [orderResponse, itemsResponse] = await Promise.all([
-          axios.get('http://localhost:3000/pedidos'),
-          axios.get('http://localhost:3000/pedidosItens')
-        ]);
-        const ordersData = orderResponse.data;
-        const itemsData = itemsResponse.data;
-
-        if (!Array.isArray(ordersData) || !Array.isArray(itemsData)) {
-          throw new Error('Dados inválidos recebidos da API');
-        }
-
-        const combinedOrders = ordersData.map(order => ({
-          ...order,
-          items: itemsData.filter(item => item.IdPedido === order.IdPedido)
-        }));
-
-        setOrders(combinedOrders);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message || 'Erro ao buscar detalhes do pedido');
-        setLoading(false);
-      }
-    };
-
-    fetchOrderDetails();
+    fetchOrder();
   }, []);
 
-  const updateItemQuantity = async (itemId, newQuantity) => {
+  const fetchOrder = () => {
+    setLoading(true);
     try {
-      const response = await axios.patch(`http://localhost:3000/pedidosItens/${itemId}`, { Quantidade: newQuantity });
-      if (response.status === 200) {
-        setOrders(prevOrders => 
-          prevOrders.map(order => ({
-            ...order,
-            items: order.items.map(item => 
-              item.IdPedidoItem === itemId ? { ...item, Quantidade: newQuantity } : item
-            )
-          }))
-        );
+      const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
+
+      if (currentOrder) {
+        setOrder(currentOrder);
       } else {
-        console.error('Erro ao atualizar a quantidade do item de pedido:', response.data.error);
+        setOrder(null);
       }
     } catch (error) {
-      console.error('Erro ao atualizar a quantidade do item de pedido:', error);
+      setError(error.message || 'Erro ao buscar pedido');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleIncrement = (itemId) => {
-    const order = orders.find(order => order.items.some(item => item.IdPedidoItem === itemId));
-    const item = order.items.find(item => item.IdPedidoItem === itemId);
-    const newQuantity = item.Quantidade + 1;
-    updateItemQuantity(itemId, newQuantity);
+    // Lógica para adicionar item ao pedido
+    addItemToOrder(itemId);
   };
 
   const handleDecrement = (itemId) => {
-    const order = orders.find(order => order.items.some(item => item.IdPedidoItem === itemId));
-    const item = order.items.find(item => item.IdPedidoItem === itemId);
-    const newQuantity = item.Quantidade - 1;
+    // Lógica para remover item do pedido
+    removeItemFromOrder(itemId);
+  };
 
-    if (newQuantity >= 1) {
-      updateItemQuantity(itemId, newQuantity);
-    } else if (newQuantity === 0) {
-      setShowConfirmationModal(true);
-      setOrderIdToDelete(order.IdPedido);
+  const addItemToOrder = async (itemId) => {
+    try {
+      if (!order) {
+        const newOrderResponse = await createNewOrder();
+        await axios.post(`http://localhost:3000/pedidosItens/${newOrderResponse.data.IdPedido}`, { itemId });
+      } else {
+        await axios.post(`http://localhost:3000/pedidosItens/${order.IdPedido}`, { itemId });
+      }
+      fetchOrder();
+    } catch (error) {
+      console.error('Erro ao adicionar item ao pedido:', error);
+    }
+  };
+  
+  const removeItemFromOrder = async (itemId) => {
+    try {
+      if (!order) {
+        console.error('Nenhum pedido encontrado.');
+        return;
+      }
+      await axios.delete(`http://localhost:3000/pedidosItens/${order.IdPedido}/${itemId}`);
+      fetchOrder();
+    } catch (error) {
+      console.error('Erro ao remover item do pedido:', error);
     }
   };
 
-  const handleDeleteOrder = (orderId) => {
+  const handleDeleteOrder = () => {
     setShowConfirmationModal(true);
-    setOrderIdToDelete(orderId);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      const response = await axios.delete(`http://localhost:3000/pedidos/${orderIdToDelete}`);
-      if (response.status === 202) {
-        setOrders(orders.filter(order => order.IdPedido !== orderIdToDelete));
-      } else {
-        console.error('Erro ao excluir pedido:', response.data.error);
+      if (order) {
+        await axios.delete(`http://localhost:3000/pedidos/${order.IdPedido}`);
       }
+      localStorage.removeItem('currentOrder');
+      setOrder(null);
+      setShowConfirmationModal(false);
     } catch (error) {
       console.error('Erro ao excluir pedido:', error);
-    } finally {
-      setShowConfirmationModal(false);
-      setOrderIdToDelete(null);
     }
   };
 
   const handleCancelDelete = () => {
     setShowConfirmationModal(false);
-    setOrderIdToDelete(null);
   };
 
   return (
@@ -114,32 +95,30 @@ const CarrinhoModal = ({ onClose }) => {
         {!loading && !error && (
           <>
             <h2>Carrinho de Compras</h2>
-            <h3>Pedidos:</h3>
-            {orders.length > 0 ? (
-              orders.map(order => (
-                <div key={order.IdPedido} className="order-container">
-                  <p className="order-title">
-                    Pedido ID: {order.IdPedido}, Data: {order.DataPedido}
-                  </p>
-                  <ul>
-                    {order.items.map(item => (
-                      <li key={item.IdPedidoItem}>
-                        <span className="item-name">{item.nome}</span>
-                        <div className='item-quantidade'>
-                          <span>Quantidade: {item.Quantidade}</span>
-                          <button className='buttonQuantidade' onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
-                          <button className='buttonQuantidade' onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
-                        </div>
-                        <span className='item-preco'>Preço: R$ {item.Preco}</span>
-                        <span className='valorTotal'>Valor Total: R$ {order.ValorTotal}</span>
-                        <button className='buttonDelete' onClick={() => handleDeleteOrder(order.IdPedido)}>Excluir Pedido</button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
+            <h3>Pedido:</h3>
+            {order ? (
+              <div className="order-container">
+                <p className="order-title">
+                  Pedido ID: {order.IdPedido}, Data: {order.DataPedido}
+                </p>
+                <ul>
+                  {order.items && order.items.map((item) => (
+                    <li key={item.IdPedidoItem}>
+                      <span className="item-name">{item.nome}</span>
+                      <div className="item-quantidade">
+                        <span>Quantidade: {item.Quantidade}</span>
+                        <button className="buttonQuantidade" onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
+                        <button className="buttonQuantidade" onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
+                      </div>
+                      <span className="item-preco">Preço: R$ {item.Preco}</span>
+                    </li>
+                  ))}
+                  <span className="valorTotal">Valor Total: R$ {order.ValorTotal}</span>
+                  <button className="buttonDelete" onClick={handleDeleteOrder}>Excluir Pedido</button>
+                </ul>
+              </div>
             ) : (
-              <p>Nenhum pedido encontrado.</p>
+              <p>Nenhum pedido encontrado. Adicione itens ao seu carrinho.</p>
             )}
           </>
         )}
@@ -147,14 +126,14 @@ const CarrinhoModal = ({ onClose }) => {
           &times;
         </span>
       </div>
-      
+
       {showConfirmationModal && (
         <div className="background">
-          <div className='modalDelete'>
+          <div className="modalDelete">
             <h2>Tem certeza que deseja excluir este pedido?</h2>
-            <div className='confirmDelete'>
-              <button onClick={handleConfirmDelete} className='yesbutton'>Sim</button>
-              <button onClick={handleCancelDelete} className='notbutton'>Cancelar</button>
+            <div className="confirmDelete">
+              <button onClick={handleConfirmDelete} className="yesbutton">Sim</button>
+              <button onClick={handleCancelDelete} className="notbutton">Cancelar</button>
             </div>
           </div>
         </div>

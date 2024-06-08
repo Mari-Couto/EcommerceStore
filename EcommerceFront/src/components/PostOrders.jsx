@@ -1,23 +1,26 @@
-import axios from 'axios';
-
 const postOrder = async (product) => {
   try {
-    const orderResponse = await axios.post('http://localhost:3000/pedidos', {
-      produtoId: product.idProduto,
-      quantidade: 1,
-      preco: product.precoProduto,
-    });
+    let currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
 
-    const orderId = orderResponse.data.IdPedido;
+    if (!currentOrder) {
+      currentOrder = {
+        IdPedido: null,
+        items: []
+      };
+    } else if (!currentOrder.items) {
+      currentOrder.items = [];
+    }
 
-    await axios.post('http://localhost:3000/pedidosItens', {
-      IdPedido: orderId,
+    currentOrder.items.push({
       IdProduto: product.idProduto,
+      Nome: product.nomeProduto,
       Quantidade: 1,
-      Preco: product.precoProduto,
+      Preco: product.precoProduto
     });
 
-    return orderResponse.data;
+    localStorage.setItem('currentOrder', JSON.stringify(currentOrder));
+
+    return currentOrder.IdPedido;
   } catch (error) {
     console.error('Erro ao inserir pedido:', error);
     throw error;

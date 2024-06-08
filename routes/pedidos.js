@@ -66,12 +66,23 @@ router.post('/', (req, res) => {
 });
 
 
-
 // Delete do pedido
-router.delete('/:IdPedido', (req, res) => {
+router.delete('/:IdPedido', async (req, res) => {
     const IdPedido = req.params.IdPedido;
 
     try {
+        // Excluir os itens associados ao pedido
+        await new Promise((resolve, reject) => {
+            mysql.query('DELETE FROM pedidosItens WHERE IdPedido = ?', [IdPedido], (err, result) => {
+                if (err) {
+                    console.error('Erro ao excluir itens do pedido:', err);
+                    return reject({ error: 'Erro ao excluir itens do pedido' });
+                }
+                resolve();
+            });
+        });
+
+        // Excluir o pedido
         mysql.query('DELETE FROM pedidos WHERE IdPedido = ?', [IdPedido], (err, result) => {
             if (err) {
                 console.error('Erro ao excluir pedido:', err);
@@ -88,8 +99,6 @@ router.delete('/:IdPedido', (req, res) => {
         return res.status(500).json({ error: 'Erro interno ao processar a requisição' });
     }
 });
-
-
 
 // Busca por id
 router.get('/:IdPedido', (req, res) => {
