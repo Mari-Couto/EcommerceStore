@@ -5,7 +5,7 @@ const PedidosItens = require('../models/pedidosItensModel')
 
 
 // Exibir itens do pedido
-router.get('/', (req, res) => {
+router.get('/:IdPedido', (req, res) => {
     const query = `
         SELECT 
             produtos.nome,

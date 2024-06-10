@@ -19,14 +19,14 @@ const CarrinhoModal = ({ onClose }) => {
     }
   }, [order]);
 
-  const fetchOrder = () => {
+  const fetchOrder = async () => {
     setLoading(true);
     try {
       const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
 
       if (currentOrder) {
         setOrder(currentOrder);
-        fetchProductNames(currentOrder.items);
+        await fetchProductNames(currentOrder.items);
       } else {
         setOrder(null);
       }
@@ -40,17 +40,20 @@ const CarrinhoModal = ({ onClose }) => {
   const fetchProductNames = async (items) => {
     try {
       const updatedItems = await Promise.all(items.map(async (item) => {
-        const response = await axios.get(`http://localhost:3000/produtos/${item.IdProduto}`);
-        return { ...item, nome: response.data.nome };
+        const productResponse = await axios.get(`http://localhost:3000/produtos/${item.IdProduto}`);
+        const product = productResponse.data;
+        return { ...item, nome: product.nome, Preco: product.precoProduto }; // Adicione o preço do produto
       }));
       setOrder((prevOrder) => ({
         ...prevOrder,
         items: updatedItems
       }));
+      calculateTotalValue(updatedItems); // Recalcule o valor total após adicionar os preços dos produtos
     } catch (error) {
-      console.error('Erro ao buscar nomes dos produtos:', error);
+      console.error('Erro ao buscar nomes e preços dos produtos:', error);
     }
   };
+  
 
   const calculateTotalValue = (items) => {
     const total = items.reduce((sum, item) => sum + item.Preco * item.Quantidade, 0);
@@ -92,6 +95,16 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
+  const createNewOrder = async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/pedidos');
+      return response.data;
+    } catch (error) {
+      console.error('Erro ao criar novo pedido:', error);
+      throw error;
+    }
+  };
+
   const handleDeleteOrder = () => {
     setShowConfirmationModal(true);
   };
@@ -102,6 +115,7 @@ const CarrinhoModal = ({ onClose }) => {
         await axios.delete(`http://localhost:3000/pedidos/${order.IdPedido}`);
       }
       localStorage.removeItem('currentOrder');
+      await createNewOrder();
       setOrder(null);
       setShowConfirmationModal(false);
     } catch (error) {
