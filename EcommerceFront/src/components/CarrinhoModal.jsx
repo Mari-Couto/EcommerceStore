@@ -7,10 +7,17 @@ const CarrinhoModal = ({ onClose }) => {
   const [error, setError] = useState(null);
   const [order, setOrder] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
     fetchOrder();
   }, []);
+
+  useEffect(() => {
+    if (order) {
+      calculateTotalValue(order.items);
+    }
+  }, [order]);
 
   const fetchOrder = () => {
     setLoading(true);
@@ -45,13 +52,16 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
+  const calculateTotalValue = (items) => {
+    const total = items.reduce((sum, item) => sum + item.Preco * item.Quantidade, 0);
+    setTotalValue(total);
+  };
+
   const handleIncrement = (itemId) => {
-    // Lógica para adicionar item ao pedido
     addItemToOrder(itemId);
   };
 
   const handleDecrement = (itemId) => {
-    // Lógica para remover item do pedido
     removeItemFromOrder(itemId);
   };
 
@@ -68,7 +78,7 @@ const CarrinhoModal = ({ onClose }) => {
       console.error('Erro ao adicionar item ao pedido:', error);
     }
   };
-  
+
   const removeItemFromOrder = async (itemId) => {
     try {
       if (!order) {
@@ -129,7 +139,7 @@ const CarrinhoModal = ({ onClose }) => {
                       <span className="item-preco">Preço: R$ {item.Preco}</span>
                     </li>
                   ))}
-                  <span className="valorTotal">Valor Total: R$ {order.ValorTotal}</span>
+                  <span className="valorTotal">Valor Total: R$ {totalValue.toFixed(2)}</span>
                   <button className="buttonDelete" onClick={handleDeleteOrder}>Excluir Pedido</button>
                 </ul>
               </div>
