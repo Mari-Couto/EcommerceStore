@@ -19,6 +19,7 @@ const CarrinhoModal = ({ onClose }) => {
 
       if (currentOrder) {
         setOrder(currentOrder);
+        fetchProductNames(currentOrder.items);
       } else {
         setOrder(null);
       }
@@ -26,6 +27,21 @@ const CarrinhoModal = ({ onClose }) => {
       setError(error.message || 'Erro ao buscar pedido');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProductNames = async (items) => {
+    try {
+      const updatedItems = await Promise.all(items.map(async (item) => {
+        const response = await axios.get(`http://localhost:3000/produtos/${item.IdProduto}`);
+        return { ...item, nome: response.data.nome };
+      }));
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        items: updatedItems
+      }));
+    } catch (error) {
+      console.error('Erro ao buscar nomes dos produtos:', error);
     }
   };
 
