@@ -13,20 +13,16 @@ const CarrinhoModal = ({ onClose }) => {
     fetchOrder();
   }, []);
 
-  useEffect(() => {
-    if (order) {
-      calculateTotalValue(order.items);
-    }
-  }, [order]);
-
   const fetchOrder = async () => {
     setLoading(true);
     try {
       const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
-
       if (currentOrder) {
         setOrder(currentOrder);
-        await fetchProductNames(currentOrder.items);
+        await Promise.all([
+          fetchProductNames(currentOrder.items),
+          fetchOrderItems(currentOrder.IdPedido) 
+        ]);
       } else {
         setOrder(null);
       }
@@ -42,56 +38,55 @@ const CarrinhoModal = ({ onClose }) => {
       const updatedItems = await Promise.all(items.map(async (item) => {
         const productResponse = await axios.get(`http://localhost:3000/produtos/${item.IdProduto}`);
         const product = productResponse.data;
-        return { ...item, nome: product.nome, Preco: product.precoProduto }; // Adicione o preço do produto
+        return { ...item, nome: product.nome, Preco: product.precoProduto }; 
       }));
       setOrder((prevOrder) => ({
         ...prevOrder,
         items: updatedItems
       }));
-      calculateTotalValue(updatedItems); // Recalcule o valor total após adicionar os preços dos produtos
+      calculateTotalValue(updatedItems); 
     } catch (error) {
       console.error('Erro ao buscar nomes e preços dos produtos:', error);
     }
   };
-  
+
+  const fetchOrderItems = async (orderId) => {
+    try {
+      const itemsResponse = await axios.get(`http://localhost:3000/pedidosItens?IdPedido=${orderId}`);
+      const itemsData = itemsResponse.data;
+      if (!Array.isArray(itemsData)) {
+        throw new Error('Dados inválidos recebidos da API');
+      }
+      setOrder((prevOrder) => ({
+        ...prevOrder,
+        items: itemsData
+      }));
+      calculateTotalValue(itemsData); 
+    } catch (error) {
+      console.error('Erro ao buscar itens do pedido:', error);
+    }
+  };
 
   const calculateTotalValue = (items) => {
     const total = items.reduce((sum, item) => sum + item.Preco * item.Quantidade, 0);
     setTotalValue(total);
   };
 
-  const handleIncrement = (itemId) => {
-    addItemToOrder(itemId);
+  const handleDeleteOrder = () => {
+    setShowConfirmationModal(true);
   };
 
-  const handleDecrement = (itemId) => {
-    removeItemFromOrder(itemId);
-  };
-
-  const addItemToOrder = async (itemId) => {
+  const handleConfirmDelete = async () => {
     try {
-      if (!order) {
-        const newOrderResponse = await createNewOrder();
-        await axios.post(`http://localhost:3000/pedidosItens/${newOrderResponse.data.IdPedido}`, { itemId });
-      } else {
-        await axios.post(`http://localhost:3000/pedidosItens/${order.IdPedido}`, { itemId });
+      if (order) {
+        await axios.delete(`http://localhost:3000/pedidos/${order.IdPedido}`);
       }
-      fetchOrder();
+      localStorage.removeItem('currentOrder');
+      setOrder(null);
+      setShowConfirmationModal(false);
+      await createNewOrder();
     } catch (error) {
-      console.error('Erro ao adicionar item ao pedido:', error);
-    }
-  };
-
-  const removeItemFromOrder = async (itemId) => {
-    try {
-      if (!order) {
-        console.error('Nenhum pedido encontrado.');
-        return;
-      }
-      await axios.delete(`http://localhost:3000/pedidosItens/${order.IdPedido}/${itemId}`);
-      fetchOrder();
-    } catch (error) {
-      console.error('Erro ao remover item do pedido:', error);
+      console.error('Erro ao excluir pedido:', error);
     }
   };
 
@@ -105,26 +100,32 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
-  const handleDeleteOrder = () => {
-    setShowConfirmationModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    try {
-      if (order) {
-        await axios.delete(`http://localhost:3000/pedidos/${order.IdPedido}`);
-      }
-      localStorage.removeItem('currentOrder');
-      await createNewOrder();
-      setOrder(null);
-      setShowConfirmationModal(false);
-    } catch (error) {
-      console.error('Erro ao excluir pedido:', error);
-    }
-  };
-
   const handleCancelDelete = () => {
     setShowConfirmationModal(false);
+  };
+
+  const handleIncrement = async (IdPedidoItem, quantidade) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/pedidosItens/${IdPedidoItem}`, { Quantidade: quantidade + 1 });
+      if (response.status === 200) {
+        fetchOrder(); 
+      }
+    } catch (error) {
+      console.error('Erro ao incrementar a quantidade do item de pedido:', error);
+    }
+  };
+  
+  const handleDecrement = async (IdPedidoItem, quantidade) => {
+    if (quantidade > 1) {
+      try {
+        const response = await axios.patch(`http://localhost:3000/pedidosItens/${IdPedidoItem}`, { Quantidade: quantidade - 1 });
+        if (response.status === 200) {
+          fetchOrder(); 
+        }
+      } catch (error) {
+        console.error('Erro ao decrementar a quantidade do item de pedido:', error);
+      }
+    }
   };
 
   return (
@@ -147,8 +148,8 @@ const CarrinhoModal = ({ onClose }) => {
                       <span className="item-name">{item.nome}</span>
                       <div className="item-quantidade">
                         <span>Quantidade: {item.Quantidade}</span>
-                        <button className="buttonQuantidade" onClick={() => handleIncrement(item.IdPedidoItem)}>+</button>
-                        <button className="buttonQuantidade" onClick={() => handleDecrement(item.IdPedidoItem)}>-</button>
+                        <button className="buttonQuantidade" onClick={() => handleIncrement(item.IdPedidoItem, item.Quantidade)}>+</button>
+                        <button className="buttonQuantidade" onClick={() => handleDecrement(item.IdPedidoItem, item.Quantidade)}>-</button>
                       </div>
                       <span className="item-preco">Preço: R$ {item.Preco}</span>
                     </li>
