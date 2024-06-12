@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios'; 
+import React, { useState, useEffect } from 'react';
 import './ProductsHome.css';
+import postOrder from './PostOrdersOne';
 
 const OneProductsCategory = ({ products }) => {
   const [productsWithImages, setProductsWithImages] = useState([]);
@@ -27,35 +27,20 @@ const OneProductsCategory = ({ products }) => {
 
   const handleBuyButtonClick = async (product) => {
     try {
-      const orderResponse = await axios.post('http://localhost:3000/pedidos', {
-        produtoId: product.IdProduto,
-        quantidade: 1,
-        preco: product.precoProduto,
-      });
-
-      const orderId = orderResponse.data.IdPedido;
-
-      const itemPayload = {
-        IdPedido: orderId,
-        IdProduto: product.IdProduto,
-        Quantidade: 1,
-        Preco: product.precoProduto,
-      };
-
-      await axios.post('http://localhost:3000/pedidosItens', itemPayload);
-
+      await postOrder({ IdProduto: product.IdProduto, ...product });
       setOrderStatuses(prevStatuses => ({
         ...prevStatuses,
-        [product.IdProduto]: { message: `Pedido inserido com sucesso! ID do Pedido: ${orderResponse.data.IdPedido}`, isSuccess: true }
+        [product.IdProduto]: { message: `Produto adicionado ao carrinho com sucesso!`, isSuccess: true }
       }));
     } catch (error) {
+      console.error('Erro ao adicionar produto ao carrinho:', error);
       setOrderStatuses(prevStatuses => ({
         ...prevStatuses,
-        [product.IdProduto]: { message: 'Erro ao inserir pedido. Tente novamente.', isSuccess: false }
+        [product.IdProduto]: { message: 'Erro ao adicionar produto ao carrinho. Tente novamente.', isSuccess: false }
       }));
     }
   };
-
+  
   return (
     <div className="catalog">
       {productsWithImages.map(product => (
