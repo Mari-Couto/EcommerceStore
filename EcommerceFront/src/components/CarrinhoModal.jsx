@@ -10,60 +10,45 @@ const CarrinhoModal = ({ onClose }) => {
   const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
-    fetchOrder();
+    fetchOrderDetails();
   }, []);
 
-  const fetchOrder = async () => {
+  const fetchOrderDetails = async () => {
     setLoading(true);
+    setError(null);
     try {
       const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
       if (currentOrder) {
-        setOrder(currentOrder);
-        await Promise.all([
-          fetchProductNames(currentOrder.items),
-          fetchOrderItems(currentOrder.IdPedido) 
+        const [productNamesResponse, orderItemsResponse] = await Promise.all([
+          axios.get(`http://localhost:3000/produtos?Ids=${currentOrder.items.map(item => item.IdProduto).join(',')}`),
+          axios.get(`http://localhost:3000/pedidosItens?IdPedido=${currentOrder.IdPedido}`)
         ]);
+
+        const products = productNamesResponse.data;
+        const itemsData = orderItemsResponse.data;
+
+        if (!Array.isArray(itemsData)) {
+          throw new Error('Dados inválidos recebidos da API');
+        }
+
+        const updatedItems = itemsData.map(item => {
+          const product = products.find(p => p.IdProduto === item.IdProduto);
+          return product ? { ...item, nome: product.nome, Preco: product.precoProduto } : item;
+        });
+
+        setOrder({
+          ...currentOrder,
+          items: updatedItems
+        });
+
+        calculateTotalValue(updatedItems);
       } else {
         setOrder(null);
       }
     } catch (error) {
-      setError(error.message || 'Erro ao buscar pedido');
+      setError(error.message || 'Erro ao buscar detalhes do pedido');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchProductNames = async (items) => {
-    try {
-      const updatedItems = await Promise.all(items.map(async (item) => {
-        const productResponse = await axios.get(`http://localhost:3000/produtos/${item.IdProduto}`);
-        const product = productResponse.data;
-        return { ...item, nome: product.nome, Preco: product.precoProduto }; 
-      }));
-      setOrder((prevOrder) => ({
-        ...prevOrder,
-        items: updatedItems
-      }));
-      calculateTotalValue(updatedItems); 
-    } catch (error) {
-      console.error('Erro ao buscar nomes e preços dos produtos:', error);
-    }
-  };
-
-  const fetchOrderItems = async (orderId) => {
-    try {
-      const itemsResponse = await axios.get(`http://localhost:3000/pedidosItens?IdPedido=${orderId}`);
-      const itemsData = itemsResponse.data;
-      if (!Array.isArray(itemsData)) {
-        throw new Error('Dados inválidos recebidos da API');
-      }
-      setOrder((prevOrder) => ({
-        ...prevOrder,
-        items: itemsData
-      }));
-      calculateTotalValue(itemsData); 
-    } catch (error) {
-      console.error('Erro ao buscar itens do pedido:', error);
     }
   };
 
@@ -108,19 +93,19 @@ const CarrinhoModal = ({ onClose }) => {
     try {
       const response = await axios.patch(`http://localhost:3000/pedidosItens/${IdPedidoItem}`, { Quantidade: quantidade + 1 });
       if (response.status === 200) {
-        fetchOrder(); 
+        fetchOrderDetails();
       }
     } catch (error) {
       console.error('Erro ao incrementar a quantidade do item de pedido:', error);
     }
   };
-  
+
   const handleDecrement = async (IdPedidoItem, quantidade) => {
     if (quantidade > 1) {
       try {
         const response = await axios.patch(`http://localhost:3000/pedidosItens/${IdPedidoItem}`, { Quantidade: quantidade - 1 });
         if (response.status === 200) {
-          fetchOrder(); 
+          fetchOrderDetails();
         }
       } catch (error) {
         console.error('Erro ao decrementar a quantidade do item de pedido:', error);
