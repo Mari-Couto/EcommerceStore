@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import postOrder from './PostOrders';
 import './ProductsHome.css';
+import './ModalBuy.css';
 
 const ProductsHome = ({ IdCategoria }) => {
   const [products, setProducts] = useState([]);
@@ -9,7 +10,10 @@ const ProductsHome = ({ IdCategoria }) => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [productsPerPageHome] = useState(8);
-  const [orderStatuses, setOrderStatuses] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalSuccess, setModalSuccess] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -40,19 +44,28 @@ const ProductsHome = ({ IdCategoria }) => {
     fetchProducts();
   }, [IdCategoria]);
 
+  useEffect(() => {
+    if (showModal) {
+      const timer = setTimeout(() => {
+        setShowModal(false);
+        setSelectedProduct(null);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showModal]);
+
   const handleBuyButtonClick = async (product) => {
     try {
       const response = await postOrder(product);
-      setOrderStatuses(prevStatuses => ({
-        ...prevStatuses,
-        [product.idProduto]: { message: `Pedido inserido com sucesso! ID do Pedido: ${response.IdPedido}`, isSuccess: true }
-      }));
+      setModalMessage('Pedido inserido com sucesso no carrinho!');
+      setModalSuccess(true);
     } catch (error) {
-      setOrderStatuses(prevStatuses => ({
-        ...prevStatuses,
-        [product.idProduto]: { message: 'Erro ao inserir pedido. Tente novamente.', isSuccess: false }
-      }));
+      setModalMessage('Erro ao inserir pedido. Tente novamente.');
+      setModalSuccess(false);
     }
+    setSelectedProduct(product);
+    setShowModal(true);
   };
 
   const indexOfLastProduct = currentPage * productsPerPageHome;
@@ -85,11 +98,6 @@ const ProductsHome = ({ IdCategoria }) => {
               <p>Preço: R$ {product.precoProduto}</p>
               <p>{product.descricao}</p>
               <button className="buy-button" onClick={() => handleBuyButtonClick(product)}>Comprar</button>
-              {orderStatuses[product.idProduto] && (
-                <div className={`order-status ${orderStatuses[product.idProduto].isSuccess ? 'success' : 'error'}`}>
-                  {orderStatuses[product.idProduto].message}
-                </div>
-              )}
             </div>
           </div>
         ))}
@@ -101,6 +109,16 @@ const ProductsHome = ({ IdCategoria }) => {
           </button>
         ))}
       </div>
+
+      {showModal && (
+        <div className="modalBuy">
+          <div className="modal-contentBuy">
+            <div className={`order-status ${modalSuccess ? 'success' : 'error'}`}>
+              {modalMessage}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
