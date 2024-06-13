@@ -4,6 +4,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './CarrinhoModal.css';
 
+// Função para formatar a data e hora
+const formatarDataHora = (data) => {
+  if (!data) return "Data Inválida";
+  const dataObj = new Date(data);
+  if (isNaN(dataObj.getTime())) return "Data Inválida";
+
+  const dia = dataObj.getDate().toString().padStart(2, '0');
+  const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+  const ano = dataObj.getFullYear();
+  const horas = dataObj.getHours().toString().padStart(2, '0');
+  const minutos = dataObj.getMinutes().toString().padStart(2, '0');
+  const segundos = dataObj.getSeconds().toString().padStart(2, '0');
+  return `${dia}/${mes}/${ano} - ${horas}:${minutos}:${segundos}`;
+};
+
 const CarrinhoModal = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -20,14 +35,16 @@ const CarrinhoModal = ({ onClose }) => {
     setError(null);
     try {
       const currentOrder = JSON.parse(localStorage.getItem('currentOrder'));
-      if (currentOrder) {
-        const [productNamesResponse, orderItemsResponse] = await Promise.all([
+      if (currentOrder && currentOrder.items) {
+        const [productNamesResponse, orderItemsResponse, orderResponse] = await Promise.all([
           axios.get(`http://localhost:3000/produtos?Ids=${currentOrder.items.map(item => item.IdProduto).join(',')}`),
-          axios.get(`http://localhost:3000/pedidosItens?IdPedido=${currentOrder.IdPedido}`)
+          axios.get(`http://localhost:3000/pedidosItens?IdPedido=${currentOrder.IdPedido}`),
+          axios.get(`http://localhost:3000/pedidos/${currentOrder.IdPedido}`)
         ]);
 
         const products = productNamesResponse.data;
         const itemsData = orderItemsResponse.data;
+        const orderData = orderResponse.data;
 
         if (!Array.isArray(itemsData)) {
           throw new Error('Dados inválidos recebidos da API');
@@ -40,6 +57,7 @@ const CarrinhoModal = ({ onClose }) => {
 
         setOrder({
           ...currentOrder,
+          DataPedido: orderData.DataPedido,
           items: updatedItems
         });
 
@@ -138,7 +156,7 @@ const CarrinhoModal = ({ onClose }) => {
             {order ? (
               <div className="order-container">
                 <p className="order-title">
-                  Pedido ID: {order.IdPedido}, Data: {order.DataPedido}
+                  Pedido ID: {order.IdPedido}, Data: {formatarDataHora(order.DataPedido)}
                 </p>
                 <ul>
                   {order.items && order.items.map((item) => (
@@ -149,8 +167,8 @@ const CarrinhoModal = ({ onClose }) => {
                         <button className="buttonQuantidade" onClick={() => handleIncrement(item.IdPedidoItem, item.Quantidade)}>+</button>
                         <button className="buttonQuantidade" onClick={() => handleDecrement(item.IdPedidoItem, item.Quantidade)}>-</button>
                         <button className="buttonDeleteItem" onClick={() => handleDeleteItem(item.IdPedidoItem)}>
-                        <FontAwesomeIcon icon={faTrash} />
-                      </button>
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
                       </div>
                       <span className="item-preco">Preço: R$ {item.Preco}</span>
                     </li>
