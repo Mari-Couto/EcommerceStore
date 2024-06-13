@@ -104,3 +104,14 @@
   .buttonQuantidade:hover {
     background-color: rgb(181, 20, 20);
   }
+
+.buttonDeleteItem {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.866);
+  margin-left: 20px;
+  font-size: 18px;
+}
+

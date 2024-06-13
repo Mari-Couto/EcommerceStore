@@ -41,11 +41,18 @@ const Navbar = ({ setShowPostForm, setProducts, setMessage }) => {
     setOpenModal((prevOpenModal) => !prevOpenModal);
   };
 
+  const handleLogoClick = (event) => {
+    event.preventDefault();
+    setProducts([]);
+    setShowPostForm(false);
+    setMessage('');
+  };
+
   return (
     <div>
       <nav className="navbar">
         <div className="navbar-logo">
-          <Link to="/" className="logo-text">
+          <Link to="/" className="logo-text" onClick={handleLogoClick}>
             ShopEase
           </Link>
         </div>

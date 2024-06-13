@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './CarrinhoModal.css';
 
 const CarrinhoModal = ({ onClose }) => {
@@ -113,6 +115,17 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
+  const handleDeleteItem = async (IdPedidoItem) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/pedidosItens/${IdPedidoItem}`);
+      if (response.status === 200) {
+        fetchOrderDetails();
+      }
+    } catch (error) {
+      console.error('Erro ao excluir item de pedido:', error);
+    }
+  };
+
   return (
     <div className="modalCarrinho">
       <div className="modal-contentCarrinho">
@@ -135,6 +148,9 @@ const CarrinhoModal = ({ onClose }) => {
                         <span>Quantidade: {item.Quantidade}</span>
                         <button className="buttonQuantidade" onClick={() => handleIncrement(item.IdPedidoItem, item.Quantidade)}>+</button>
                         <button className="buttonQuantidade" onClick={() => handleDecrement(item.IdPedidoItem, item.Quantidade)}>-</button>
+                        <button className="buttonDeleteItem" onClick={() => handleDeleteItem(item.IdPedidoItem)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
                       </div>
                       <span className="item-preco">Preço: R$ {item.Preco}</span>
                     </li>
