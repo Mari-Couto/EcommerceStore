@@ -24,6 +24,8 @@ const CarrinhoModal = ({ onClose }) => {
   const [error, setError] = useState(null);
   const [order, setOrder] = useState(null);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showDeleteItemModal, setShowDeleteItemModal] = useState(false);
+  const [selectedItemToDelete, setSelectedItemToDelete] = useState(null);
   const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
@@ -130,18 +132,28 @@ const CarrinhoModal = ({ onClose }) => {
       } catch (error) {
         console.error('Erro ao decrementar a quantidade do item de pedido:', error);
       }
+    } else if (quantidade === 1) {
+      setSelectedItemToDelete(IdPedidoItem);
+      setShowDeleteItemModal(true);
     }
   };
 
-  const handleDeleteItem = async (IdPedidoItem) => {
+  const handleConfirmDeleteItem = async () => {
     try {
-      const response = await axios.delete(`http://localhost:3000/pedidosItens/${IdPedidoItem}`);
-      if (response.status === 200) {
+      if (selectedItemToDelete) {
+        await axios.delete(`http://localhost:3000/pedidosItens/${selectedItemToDelete}`);
         fetchOrderDetails();
       }
+      setShowDeleteItemModal(false);
+      setSelectedItemToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir item de pedido:', error);
     }
+  };
+
+  const handleCancelDeleteItem = () => {
+    setShowDeleteItemModal(false);
+    setSelectedItemToDelete(null);
   };
 
   return (
@@ -194,6 +206,18 @@ const CarrinhoModal = ({ onClose }) => {
             <div className="confirmDelete">
               <button onClick={handleConfirmDelete} className="yesbutton">Sim</button>
               <button onClick={handleCancelDelete} className="notbutton">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteItemModal && (
+        <div className="background">
+          <div className="modalDelete">
+            <h2>Tem certeza que deseja excluir este item?</h2>
+            <div className="confirmDelete">
+              <button onClick={handleConfirmDeleteItem} className="yesbutton">Sim</button>
+              <button onClick={handleCancelDeleteItem} className="notbutton">Cancelar</button>
             </div>
           </div>
         </div>
