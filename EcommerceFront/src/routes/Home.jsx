@@ -11,7 +11,11 @@ const Home = () => {
 
   return (
     <div>
-      <Navbar setShowPostForm={setShowPostForm} setProducts={setProducts} setMessage={setMessage} />
+      <Navbar 
+        setShowPostForm={setShowPostForm} 
+        setProducts={setProducts} 
+        setMessage={setMessage} 
+      />
       {message && <div className="messageProduto">{message}</div>}
       {showPostForm ? (
         <OneProductHome products={products} onClose={() => setShowPostForm(false)} />

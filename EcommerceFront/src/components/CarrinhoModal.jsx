@@ -138,6 +138,11 @@ const CarrinhoModal = ({ onClose }) => {
     }
   };
 
+  const handleDeleteItem = (IdPedidoItem) => {
+    setSelectedItemToDelete(IdPedidoItem);
+    setShowDeleteItemModal(true);
+  };
+
   const handleConfirmDeleteItem = async () => {
     try {
       if (selectedItemToDelete) {

@@ -22,14 +22,14 @@
   margin: 0;
   padding: 0;
   font-size: 16px;
-  color: #ffffff; /* Cor do texto preto */
+  color: #ffffff;
   display: flex;
   align-items: center;
 }
 
 .navbar-links a {
-  margin-left: 10px; /* Espaçamento entre os ícones */
-  color: #ffffff; /* Cor dos ícones */
+  margin-left: 10px; 
+  color: #ffffff;
   text-decoration: none;
 }
 
@@ -103,6 +103,18 @@
 
 .postar-produto-button:hover {
   background-color: #2d33eb; 
+}
+
+.error-message {
+  color: red;
+  font-size: 1.2em;
+  text-align: center;
+  margin: 10px 0;
+  border-radius: 5px;
+  padding: 10px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 

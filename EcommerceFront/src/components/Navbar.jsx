@@ -1,37 +1,51 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faUser, faShoppingCart, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
-import './Navbar.css';
 import axios from 'axios';
+import './Navbar.css'; 
 import CarrinhoModal from './CarrinhoModal';
 
 const Navbar = ({ setShowPostForm, setProducts, setMessage }) => {
   const [openModal, setOpenModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [messageTimeout, setMessageTimeout] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (searchQuery.trim() === '') {
       setProducts([]);
       setShowPostForm(false);
-      setMessage('');
+      setErrorMessage('');
       return;
     }
     try {
       const response = await axios.get(`http://localhost:3000/produtos/busca/${searchQuery}`);
       if (response.data.length === 0) {
-        setMessage('Produto não encontrado');
+        setErrorMessage('Produto não encontrado');
         setProducts([]);
         setShowPostForm(false);
+        if (messageTimeout) {
+          clearTimeout(messageTimeout);
+        }
+        setMessageTimeout(setTimeout(() => {
+          setErrorMessage('');
+        }, 2000)); 
       } else {
         setProducts(response.data);
         setShowPostForm(true);
-        setMessage('');
+        setErrorMessage('');
       }
     } catch (error) {
-      setMessage('Produto não encontrado');
+      setErrorMessage('Produto não encontrado!');
+      if (messageTimeout) {
+        clearTimeout(messageTimeout);
+      }
+      setMessageTimeout(setTimeout(() => {
+        setErrorMessage('');
+      }, 2000)); 
     }
     setSearchQuery('');
   };
@@ -41,11 +55,20 @@ const Navbar = ({ setShowPostForm, setProducts, setMessage }) => {
     setOpenModal((prevOpenModal) => !prevOpenModal);
   };
 
-  const handleLogoClick = (event) => {
-    event.preventDefault();
-    setProducts([]);
-    setShowPostForm(false);
-    setMessage('');
+  const handleLogoClick = () => {
+    if (typeof setProducts === 'function') {
+      setProducts([]);
+    }
+    if (typeof setShowPostForm === 'function') {
+      setShowPostForm(false);
+    }
+    if (typeof setMessage === 'function') {
+      setMessage('');
+    }
+    if (messageTimeout) {
+      clearTimeout(messageTimeout);
+    }
+    setErrorMessage('');
   };
 
   return (
@@ -75,7 +98,7 @@ const Navbar = ({ setShowPostForm, setProducts, setMessage }) => {
             <input
               type="text"
               value={searchQuery}
-              placeholder="Buscar por nome..."
+              placeholder="Busque seu Produto..."
               onChange={(ev) => setSearchQuery(ev.target.value)}
             />
             <button type="submit">
@@ -102,6 +125,12 @@ const Navbar = ({ setShowPostForm, setProducts, setMessage }) => {
         <Link to="/Categorias/14/produtos">Material escolar</Link>
         <Link to="/Categorias/17/produtos">Cama e banho</Link>
       </div>
+
+      {errorMessage && (
+        <div className="error-message">
+          {errorMessage}
+        </div>
+      )}
     </div>
   );
 };
