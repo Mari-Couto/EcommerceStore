@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Category.css';
 
-const CategoryCard = ({ category, onDelete, isSearchResult }) => {
-  const [newName, setNewName] = useState(category.nomeCategoria);
+const CategoryCard = ({ category, nomeCategoria, onDelete, isSearchResult }) => {
+  const [newName, setNewName] = useState(nomeCategoria);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+
+  console.log('Category data:', category);
 
   const handleInputChange = (e) => {
     setNewName(e.target.value);
@@ -61,7 +63,7 @@ const CategoryCard = ({ category, onDelete, isSearchResult }) => {
                       onChange={handleInputChange}
                     />
                   ) : (
-                    category.nomeCategoria
+                    nomeCategoria
                   )}
                 </td>
                 <td>
@@ -92,6 +94,6 @@ const CategoryCard = ({ category, onDelete, isSearchResult }) => {
       </div>
     </div>
   );
-}
+};
 
 export default CategoryCard;

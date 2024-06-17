@@ -92,6 +92,9 @@ const NavbarCategory = () => {
   const handleDelete = (categoryId) => {
     setCategories(prevCategories => prevCategories.filter(category => category.IdCategoria !== categoryId));
     setMessage('Categoria excluída com sucesso.');
+    setTimeout(() => {
+      setMessage('');
+    }, 2000);
   };
 
   if (isLoading) {

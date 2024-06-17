@@ -21,7 +21,6 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 const CategoryCatalog = ({ categories = [], onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const categoriesPerPage = 8;
-
   const indexOfLastCategory = currentPage * categoriesPerPage;
   const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
   const currentCategories = categories.slice(indexOfFirstCategory, indexOfLastCategory);
@@ -29,11 +28,12 @@ const CategoryCatalog = ({ categories = [], onDelete }) => {
 
   return (
     <div>
-      <div className="category-list">
+        <div className="category-list">
         {currentCategories.map(category => (
           <CategoryCard 
             key={category.IdCategoria} 
             category={category} 
+            nomeCategoria={category.nomeCategoria}
             onDelete={onDelete} 
           />
         ))}
