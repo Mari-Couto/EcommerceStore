@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import CategoryCard from './CategoryCard';
 import './ProductCatalog.css';
 
@@ -19,40 +18,9 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
   );
 };
 
-const CategoryCatalog = () => {
-  const [categories, setCategories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fetchError, setFetchError] = useState(null);
+const CategoryCatalog = ({ categories = [], onDelete }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const categoriesPerPage = 8;
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/categoria');
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        setFetchError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const handleDelete = (categoryId) => {
-    setCategories(prevCategories => prevCategories.filter(category => category.IdCategoria !== categoryId));
-  };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (fetchError) {
-    return <div>Error: {fetchError.message}</div>;
-  }
 
   const indexOfLastCategory = currentPage * categoriesPerPage;
   const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
@@ -66,7 +34,7 @@ const CategoryCatalog = () => {
           <CategoryCard 
             key={category.IdCategoria} 
             category={category} 
-            onDelete={handleDelete} 
+            onDelete={onDelete} 
           />
         ))}
       </div>

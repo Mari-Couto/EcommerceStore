@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import './Navbar.css';
 import CategoryCard from './CategoryCard';
+import CategoryCatalog from './CategoryCatalog';
 
 const NavbarCategory = () => {
   const [message, setMessage] = useState('');
@@ -13,13 +14,31 @@ const NavbarCategory = () => {
   const [searchResult, setSearchResult] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [categories, setCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/categoria');
+      setCategories(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar categorias:', error);
+      setFetchError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchData = async () => {
     try {
       const response = await axios.get(`http://localhost:3000/categoria/${searchId}`);
       setSearchResult(response.data);
       setMessage('');
-      setSearchId(''); 
+      setSearchId('');
     } catch (error) {
       setSearchResult(null);
       setMessage('Categoria não encontrada.');
@@ -57,17 +76,31 @@ const NavbarCategory = () => {
       setNewCategoryName('');
       setShowPostForm(false);
       setMessage('Categoria criada com sucesso.');
+  
+      setTimeout(() => {
+        setMessage('');
+      }, 2000);
     } catch (error) {
       setMessage('Erro ao criar categoria. Por favor, tente novamente.');
+      setTimeout(() => {
+        setMessage('');
+      }, 2000);
     }
+  };
+  
+
+  const handleDelete = (categoryId) => {
+    setCategories(prevCategories => prevCategories.filter(category => category.IdCategoria !== categoryId));
+    setMessage('Categoria excluída com sucesso.');
   };
 
-  const handleDelete = (deletedId) => {
-    if (searchResult && searchResult.IdCategoria === deletedId) {
-      setSearchResult(null);
-      setMessage('Categoria excluída com sucesso.');
-    }
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (fetchError) {
+    return <div>Error: {fetchError.message}</div>;
+  }
 
   return (
     <div>
@@ -127,6 +160,11 @@ const NavbarCategory = () => {
           isSearchResult={true} 
         />
       )}
+
+      <CategoryCatalog 
+        categories={categories} 
+        onDelete={handleDelete} 
+      />
     </div>
   );
 };
