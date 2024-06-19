@@ -42,7 +42,7 @@ const NavbarSearch = () => {
       return;
     }
     fetchData();
-    setIdProduct(''); // Limpar a barra de pesquisa após a busca
+    setIdProduct(''); 
   };
 
   const handlePostButtonClick = () => {

@@ -5,7 +5,7 @@ import './PostProductForm.css';
 const url = 'http://localhost:3000/produtos';
 const categoriasUrl = 'http://localhost:3000/categoria'; 
 
-const PostProductForm = ({ onClose }) => {
+const PostProductForm = () => {
   const [productData, setProductData] = useState({
     nome: '',
     precoProduto: '',
@@ -77,6 +77,10 @@ const PostProductForm = ({ onClose }) => {
     }
   };
 
+  const handleCancel = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="post-product-form">
       <h2>Postar Produto</h2>
@@ -100,13 +104,13 @@ const PostProductForm = ({ onClose }) => {
         <label>
           Categoria:
           <select name="IdCategoria" value={productData.IdCategoria} onChange={handleChange} required className="categoria-select">
-                <option value="">Selecione uma categoria</option>
-                {categorias.map((categoria) => (
-                 <option key={categoria.IdCategoria} value={categoria.IdCategoria}>
+            <option value="">Selecione uma categoria</option>
+            {categorias.map((categoria) => (
+              <option key={categoria.IdCategoria} value={categoria.IdCategoria}>
                 {categoria.nomeCategoria}
-               </option>
-                ))}
-              </select>
+              </option>
+            ))}
+          </select>
         </label>
         <label className="file-label">
           Selecione a imagem:
@@ -115,7 +119,7 @@ const PostProductForm = ({ onClose }) => {
         {fileName && <p>Arquivo selecionado: {fileName}</p>}
         <div className='button-containerPost'>
           <button type="submit" className='yesbuttonPost'>Postar</button>
-          <button type="button" onClick={onClose} className='notbuttonPost'>Cancelar</button>
+          <button type="button" onClick={handleCancel} className='notbuttonPost'>Cancelar</button>
         </div>
       </form>
       {message && <p className='message'>{message}</p>}

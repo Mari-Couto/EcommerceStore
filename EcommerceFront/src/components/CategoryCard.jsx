@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Category.css';
 
-const CategoryCard = ({ category, nomeCategoria, onDelete, isSearchResult }) => {
-  const [newName, setNewName] = useState(nomeCategoria);
+const CategoryCard = ({ category, onDelete, isSearchResult }) => {
+  const [newName, setNewName] = useState(category.nomeCategoria);
   const [isEditing, setIsEditing] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-
-  console.log('Category data:', category);
 
   const handleInputChange = (e) => {
     setNewName(e.target.value);
@@ -17,6 +15,7 @@ const CategoryCard = ({ category, nomeCategoria, onDelete, isSearchResult }) => 
     try {
       await axios.patch(`http://localhost:3000/categoria/${category.IdCategoria}`, { nomeCategoria: newName });
       setIsEditing(false);
+      category.nomeCategoria = newName; 
     } catch (error) {
       console.error('Erro ao atualizar a categoria:', error);
     }
@@ -25,7 +24,7 @@ const CategoryCard = ({ category, nomeCategoria, onDelete, isSearchResult }) => 
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:3000/categoria/${category.IdCategoria}`);
-      onDelete(category.IdCategoria); 
+      onDelete(category.IdCategoria);
     } catch (error) {
       console.error('Erro ao excluir a categoria:', error);
     }
@@ -63,7 +62,7 @@ const CategoryCard = ({ category, nomeCategoria, onDelete, isSearchResult }) => 
                       onChange={handleInputChange}
                     />
                   ) : (
-                    nomeCategoria
+                    category.nomeCategoria
                   )}
                 </td>
                 <td>

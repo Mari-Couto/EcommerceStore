@@ -24,6 +24,7 @@ const NavbarCategory = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://localhost:3000/categoria');
+      console.log('Categorias fetched:', response.data);
       setCategories(response.data);
     } catch (error) {
       console.error('Erro ao buscar categorias:', error);
@@ -69,14 +70,15 @@ const NavbarCategory = () => {
   };
 
   const handlePostCategory = async (event) => {
-    event.preventDefault();
+    window.location.reload();
     try {
       const response = await axios.post('http://localhost:3000/categoria', { nomeCategoria: newCategoryName });
+      console.log('Categoria criada:', response.data);
       setCategories([...categories, response.data]);
       setNewCategoryName('');
       setShowPostForm(false);
       setMessage('Categoria criada com sucesso.');
-  
+
       setTimeout(() => {
         setMessage('');
       }, 2000);
@@ -87,7 +89,6 @@ const NavbarCategory = () => {
       }, 2000);
     }
   };
-  
 
   const handleDelete = (categoryId) => {
     setCategories(prevCategories => prevCategories.filter(category => category.IdCategoria !== categoryId));
@@ -160,13 +161,13 @@ const NavbarCategory = () => {
         <CategoryCard
           category={searchResult}
           onDelete={handleDelete}
-          isSearchResult={true} 
+          isSearchResult={true}
         />
       )}
 
-      <CategoryCatalog 
-        categories={categories} 
-        onDelete={handleDelete} 
+      <CategoryCatalog
+        categories={categories}
+        onDelete={handleDelete}
       />
     </div>
   );
